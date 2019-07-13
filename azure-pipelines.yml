@@ -10,7 +10,7 @@ pool:
   vmImage: 'windows-latest'
 
 variables:
-  solution: 'SchildExport/SchildExport.sln'
+  solution: 'SchildExport.sln'
   buildPlatform: 'Any CPU'
   buildConfiguration: 'Release'
 
