@@ -44,6 +44,7 @@ steps:
   inputs:
     command: push
     publishFeedCredentials: 'NuGet.org'
+    nuGetFeedType: external
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
 
