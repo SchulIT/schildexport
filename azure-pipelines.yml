@@ -39,6 +39,17 @@ steps:
     command: pack
     packagesToPack: '**\*.nuspec'
 
+- task: GitHubRelease@0
+  displayName: Release nightly to GitHub
+  inputs:
+    gitHubConnection: SchulIT
+    repositoryName: schulit/schildexport
+    tagSource: manual
+    tag: nightly
+    assets: '**\*.dll'
+    assetUploadMode: replace
+  condition: succeeeded()
+
 - task: NuGetCommand@2
   displayName: 'nuget push'
   inputs:
@@ -51,6 +62,7 @@ steps:
 - task: GitHubRelease@0
   displayName: Release to GitHub
   inputs:
+    gitHubConnection: SchulIT
     repositoryName: schulit/schildexport
     assets: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
