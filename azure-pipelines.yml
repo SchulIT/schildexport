@@ -42,7 +42,7 @@ steps:
 - task: GitHubRelease@0
   displayName: Release nightly to GitHub
   inputs:
-    gitHubConnection: SchulIT
+    gitHubConnection: 'GitHub.com'
     repositoryName: schulit/schildexport
     tagSource: manual
     tag: nightly
@@ -62,7 +62,7 @@ steps:
 - task: GitHubRelease@0
   displayName: Release to GitHub
   inputs:
-    gitHubConnection: SchulIT
+    gitHubConnection: 'GitHub.com'
     repositoryName: schulit/schildexport
     assets: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
