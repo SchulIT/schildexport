@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>SchulIT.SchildExport</id>
+    <version>1.0.0-preview1</version>
+    <title>SchulIT.SchildExport</title>
+    <authors>Marcel Marnitz</authors>
+    <license type="file">LICENSE.md</license>
+    <projectUrl>https://github.com/SchulIT/schildexport</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Mithilfe dieser Bibliothek kann die Schild-Datenbank ausgelesen werden.</description>
+    <copyright>SchulIT</copyright>
+    <tags>Schild NRW Schulverwaltung Export</tags>
+    <dependencies>
+        <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="[2.2,3.0)" />
+        <dependency id="Pomelo.EntityFrameworkCore.MySql" version="[2.2,3.0)" />
+    </dependencies>
+    
+  </metadata>
+  <files>
+        <file src="..\LICENSE.md" target="LICENSE.md" />
+        <file src="bin\Release\netstandard2.0\SchulIT.SchildExport.dll" target="lib\netstandard2.0" />
+  </files>
+</package>
