@@ -48,7 +48,7 @@ steps:
     tag: nightly
     assets: '**\*.dll'
     assetUploadMode: replace
-  condition: succeeeded()
+  condition: succeeded()
 
 - task: NuGetCommand@2
   displayName: 'nuget push'
