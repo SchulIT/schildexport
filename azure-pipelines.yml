@@ -45,3 +45,10 @@ steps:
     command: push
     packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
   condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
+
+- task: GitHubRelease@0
+  displayName: Release to GitHub
+  inputs:
+    repositoryName: schulit/schildexport
+    assets: '$(Build.ArtifactStagingDirectory)/**/*.nupkg'
+  condition: and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/'))
