@@ -1,5 +1,8 @@
 # SchildExport
 
+[![NuGet version (SchulIT.SchildExport)](https://img.shields.io/nuget/v/SchulIT.SchildExport.svg?style=flat-square)](https://www.nuget.org/packages/SchulIT.SchildExport/)
+[![Build Status](https://dev.azure.com/schulit/SchildExport/_apis/build/status/SchulIT.schildexport?branchName=master)](https://dev.azure.com/schulit/SchildExport/_build/latest?definitionId=1&branchName=master)
+
 Mithilfe dieser Bibliothek kann die Schild-Datenbank ausgelesen werden. Aktuell können folgende Dinge ausgelesen werden:
 
 * Schüler (Id, Vorname, Nachname, Geschlecht, E-Mail Adresse, Geburtstag, Klasse)
@@ -116,3 +119,6 @@ var students = await schildExport.GetStudentsAsync(new CustomSchuelerStudentConv
 
 Unter Umständen muss man weitere Converter dabei angeben. Dann einfach die Standard-Konverter (oder einen eigenen, falls vorhanden) angeben. Die Standard-Converter befinden sich im Namespace `SchulIT.SchildExport.Converter`.
 
+## Lizenz
+
+[MIT](./LICENSE.md)
