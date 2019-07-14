@@ -32,6 +32,7 @@ namespace SchildExport.Console
                 WriteLine("[5] grades");
                 WriteLine("[6] teacher subjects");
                 WriteLine("[7] courses");
+                WriteLine("[8] school info");
 
                 int choice = ReadInt();
 
@@ -74,6 +75,11 @@ namespace SchildExport.Console
                     case 6:
                         WriteLine("Exporting teacher grades...");
                         WriteJson(GetResult(schildExport.GetTeacherSubjectsAsync()));
+                        break;
+
+                    case 8:
+                        WriteLine("Get current academic year info...");
+                        WriteJson(GetResult(schildExport.GetSchoolInfoAsync()));
                         break;
                 }
             }

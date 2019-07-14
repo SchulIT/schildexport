@@ -104,6 +104,8 @@ namespace SchulIT.SchildExport.Data
 
         public virtual DbQuery<LehrerLehramtLehrbef> LehrerLehramtLehrbef { get; set; }
 
+        public virtual DbQuery<EigeneSchule> EigeneSchule { get; set; }
+
         // Unable to generate entity type for table 'dbo.EigeneSchule_FachTeilleistungen'. Please see the warning messages.
         // Unable to generate entity type for table 'dbo.EigeneSchule_Merkmale'. Please see the warning messages.
         // Unable to generate entity type for table 'dbo.EigeneSchule_Teilstandorte'. Please see the warning messages.
@@ -5144,6 +5146,7 @@ namespace SchulIT.SchildExport.Data
             });
 
             modelBuilder.Query<LehrerLehramtLehrbef>();
+            modelBuilder.Query<EigeneSchule>();
         }
     }
 }

@@ -31,5 +31,9 @@ namespace SchulIT.SchildExport
         Task<List<Course>> GetCoursesAsync(int? year, int? section);
 
         Task<List<Course>> GetCoursesAsync(int? year, int? section, IConverter<Kurse, Course> converter, IConverter<SchuelerLeistungsdaten, StudentCourseMembership> membershipConverter, IConverter<KLehrer, Teacher> teacherConverter, IConverter<EigeneSchuleFaecher, Subject> subjectConverter, IConverter<Versetzung, Grade> gradeConverter, IConverter<Schueler, Student> studentConverter);
+
+        Task<SchoolInfo> GetSchoolInfoAsync();
+
+        Task<SchoolInfo> GetSchoolInfoAsync(IConverter<EigeneSchule, SchoolInfo> converter);
     }
 }

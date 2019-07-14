@@ -6,6 +6,7 @@ using SchulIT.SchildExport.Models;
 using SchulIT.SchildExport.Repository;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SchulIT.SchildExport
@@ -169,6 +170,17 @@ namespace SchulIT.SchildExport
             }
 
             return await GetAsync(new CourseRepository(year, section, grades, teachers, subjects, membershipConverter), converter);
+        }
+
+        public Task<SchoolInfo> GetSchoolInfoAsync()
+        {
+            return GetSchoolInfoAsync(new EigeneSchuleSchoolInfoConverter());
+        }
+
+        public async Task<SchoolInfo> GetSchoolInfoAsync(IConverter<EigeneSchule, SchoolInfo> converter)
+        {
+            var results = await GetAsync(new SchoolInfoRepository(), converter).ConfigureAwait(false);
+            return results.FirstOrDefault();
         }
     }
 }
