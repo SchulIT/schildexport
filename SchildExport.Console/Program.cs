@@ -31,6 +31,7 @@ namespace SchildExport.Console
                 WriteLine("[4] subjects");
                 WriteLine("[5] grades");
                 WriteLine("[6] teacher subjects");
+                WriteLine("[7] courses");
 
                 int choice = ReadInt();
 
@@ -57,7 +58,7 @@ namespace SchildExport.Console
 
                     case 3:
                         WriteLine("Exporting teachers...");
-                        WriteJson(GetResult(schildExport.GetTeachersAsync(new CustomKLehrerTeacherConverter())));
+                        WriteJson(GetResult(schildExport.GetTeachersAsync(true, new CustomKLehrerTeacherConverter())));
                         break;
 
                     case 4:

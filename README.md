@@ -11,6 +11,7 @@ Mithilfe dieser Bibliothek kann die Schild-Datenbank ausgelesen werden. Aktuell 
 * Fächer (Id, Abkürzung, Beschreibung)
 * Lehrbefähigungen der Lehrer (Lehrer, Liste von Fächern)
 * Eltern (Id, Schüler, Art, Vorname, Nachname, E-Mail Adresse)
+* Kurse (Id, Name, Fach, Kursart, Schüler inkl. Kursart, Lehrer, Klassen)
 
 Schild muss dazu mit einer MSSQL- oder MySQL-Datenbank betrieben werden. Access-Datenbanken werden nicht unterstützt. **Wichtig:** Bisher wurde nur mit einer MSSQL-Datenbank getestet.
 
@@ -75,7 +76,7 @@ public class CustomKLehrerTeacherConverter : KLehrerTeacherConverter
 Schritt 2: Abfrage anpassen:
 
 ```csharp
-var teachers = exporter.GetTeachersAsync(new CustomKLehrerTeacherConverter());
+var teachers = exporter.GetTeachersAsync(/* onlyVisible = */ true, new CustomKLehrerTeacherConverter());
 ```
 
 #### Beispiel 2: weitere Felder abfragen

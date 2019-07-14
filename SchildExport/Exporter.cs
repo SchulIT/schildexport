@@ -52,14 +52,14 @@ namespace SchulIT.SchildExport
             return GetAsync(new SubjectRepository(), converter);
         }
 
-        public Task<List<Teacher>> GetTeachersAsync()
+        public Task<List<Teacher>> GetTeachersAsync(bool onlyVisible = true)
         {
-            return GetTeachersAsync(new KLehrerTeacherConverter());
+            return GetTeachersAsync(onlyVisible, new KLehrerTeacherConverter());
         }
 
-        public Task<List<Teacher>> GetTeachersAsync(IConverter<KLehrer, Teacher> converter)
+        public Task<List<Teacher>> GetTeachersAsync(bool onlyVisible, IConverter<KLehrer, Teacher> converter)
         {
-            return GetAsync(new TeacherRepository(), converter);
+            return GetAsync(new TeacherRepository(onlyVisible), converter);
         }
 
         public Task<List<Grade>> GetGradesAsync()
@@ -73,21 +73,21 @@ namespace SchulIT.SchildExport
 
             if (versetzungsGradeConverter != null)
             {
-                var teachers = await GetTeachersAsync(teacherConverter).ConfigureAwait(false);
+                var teachers = await GetTeachersAsync(false, teacherConverter).ConfigureAwait(false);
                 versetzungsGradeConverter.SetTeachers(teachers);
             }
 
             return await GetAsync(new GradeRepository(), converter).ConfigureAwait(false);
         }
 
-        public Task<List<TeacherSubjects>> GetTeacherSubjectsAsync()
+        public Task<List<TeacherSubjects>> GetTeacherSubjectsAsync(bool onlyVisibleTeachers = true)
         {
-            return GetTeacherSubjectsAsync(new KLehrerNullConverter(), new EigeneSchueleFaecherSubjectConverter());
+            return GetTeacherSubjectsAsync(onlyVisibleTeachers, new KLehrerNullConverter(), new EigeneSchueleFaecherSubjectConverter());
         }
 
-        public async Task<List<TeacherSubjects>> GetTeacherSubjectsAsync(IConverter<KLehrer, Teacher> teacherConverter, IConverter<EigeneSchuleFaecher, Subject> subjectConverter)
+        public async Task<List<TeacherSubjects>> GetTeacherSubjectsAsync(bool onlyVisibleTeachers, IConverter<KLehrer, Teacher> teacherConverter, IConverter<EigeneSchuleFaecher, Subject> subjectConverter)
         {
-            var teachers = await GetTeachersAsync(teacherConverter).ConfigureAwait(false);
+            var teachers = await GetTeachersAsync(onlyVisibleTeachers, teacherConverter).ConfigureAwait(false);
             var subjects = await GetSubjectsAsync(subjectConverter).ConfigureAwait(false);
 
             return await GetAsync(new TeacherSubjectRepository(teachers, subjects), null);
@@ -141,6 +141,34 @@ namespace SchulIT.SchildExport
             }
 
             return await GetAsync(new ParentRepository(), converter);
+        }
+
+        public Task<List<Course>> GetCoursesAsync(int? year, int? section)
+        {
+            return GetCoursesAsync(year, section, new KurseCourseConverter(), new SchuelerLeistungsdatenStudentMembershipConverter(), new KLehrerTeacherConverter(), new EigeneSchueleFaecherSubjectConverter(), new VersetzungGradeConverter(), new SchuelerStudentConverter());
+        }
+
+        public async Task<List<Course>> GetCoursesAsync(int? year, int? section, IConverter<Kurse, Course> converter, IConverter<SchuelerLeistungsdaten, StudentCourseMembership> membershipConverter, IConverter<KLehrer, Teacher> teacherConverter, IConverter<EigeneSchuleFaecher, Subject> subjectConverter, IConverter<Versetzung, Grade> gradeConverter, IConverter<Schueler, Student> studentConverter)
+        {
+            var students = await GetStudentsAsync(studentConverter, gradeConverter, new KLehrerNullConverter()).ConfigureAwait(false);
+            var grades = await GetGradesAsync(gradeConverter, new KLehrerNullConverter()).ConfigureAwait(false);
+            var teachers = await GetTeachersAsync(false, teacherConverter).ConfigureAwait(false);
+            var subjects = await GetSubjectsAsync(subjectConverter).ConfigureAwait(false);
+
+            var kurseCourseconverter = converter as KurseCourseConverter;
+
+            if(kurseCourseconverter != null)
+            {
+                kurseCourseconverter.SetSubjects(subjects);
+                kurseCourseconverter.SetTeachers(teachers);
+            }
+
+            if (membershipConverter is SchuelerLeistungsdatenStudentMembershipConverter)
+            {
+                (membershipConverter as SchuelerLeistungsdatenStudentMembershipConverter).SetStudents(students);
+            }
+
+            return await GetAsync(new CourseRepository(year, section, grades, teachers, subjects, membershipConverter), converter);
         }
     }
 }
