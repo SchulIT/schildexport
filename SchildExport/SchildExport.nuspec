@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>SchulIT.SchildExport</id>
-    <version>1.0.0-preview1</version>
+    <version>1.0.0-preview2</version>
     <title>SchulIT.SchildExport</title>
     <authors>Marcel Marnitz</authors>
     <license type="file">LICENSE.md</license>
