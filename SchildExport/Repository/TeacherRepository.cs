@@ -3,6 +3,7 @@ using SchulIT.SchildExport.Data;
 using SchulIT.SchildExport.Entities;
 using SchulIT.SchildExport.Models;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SchulIT.SchildExport.Repository
@@ -11,7 +12,7 @@ namespace SchulIT.SchildExport.Repository
     {
         public override Task<List<Teacher>> FindAllAsync(SchildNRWContext context, IConverter<KLehrer, Teacher> converter)
         {
-            return GetEntitiesAsync(context.KLehrer, converter);
+            return GetEntitiesAsync(context.KLehrer.Where(x => x.Sichtbar == "+"), converter);
         }
     }
 }
