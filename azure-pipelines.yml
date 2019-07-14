@@ -39,17 +39,6 @@ steps:
     command: pack
     packagesToPack: '**\*.nuspec'
 
-- task: GitHubRelease@0
-  displayName: Release nightly to GitHub
-  inputs:
-    gitHubConnection: 'GitHub.com'
-    repositoryName: schulit/schildexport
-    tagSource: manual
-    tag: nightly
-    assets: '**\*.dll'
-    assetUploadMode: replace
-  condition: succeeded()
-
 - task: NuGetCommand@2
   displayName: 'nuget push'
   inputs:
