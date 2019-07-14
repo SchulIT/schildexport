@@ -77,6 +77,15 @@ namespace SchildExport.Console
                         WriteJson(GetResult(schildExport.GetTeacherSubjectsAsync()));
                         break;
 
+                    case 7:
+                        WriteLine("Get current academic year info...");
+                        var info = GetResult(schildExport.GetSchoolInfoAsync());
+                        WriteLine($"Acamdemic year: {info.CurrentYear}");
+                        WriteLine($"Acamdemic year section: {info.CurrentSection}");
+
+                        WriteJson(GetResult(schildExport.GetCoursesAsync(info.CurrentYear, info.CurrentSection)));
+                        break;
+
                     case 8:
                         WriteLine("Get current academic year info...");
                         WriteJson(GetResult(schildExport.GetSchoolInfoAsync()));
