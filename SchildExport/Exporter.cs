@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using LinqToDB.Data;
 using SchulIT.SchildExport.Converter;
 using SchulIT.SchildExport.Data;
 using SchulIT.SchildExport.Entities;
@@ -6,181 +6,147 @@ using SchulIT.SchildExport.Models;
 using SchulIT.SchildExport.Repository;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SchulIT.SchildExport
 {
     public class Exporter : IExporter
     {
-        private DatabaseType databaseType;
-        private string connectionString = null;
-
-        private SchildNRWContext GetContext()
+        public void Configure(string connectionString, bool enableTrace)
         {
-            if (connectionString == null)
+            if (enableTrace)
             {
-                throw new InvalidOperationException("You must configure the exporter using the Configure() method first.");
+                DataConnection.TurnTraceSwitchOn();
+                DataConnection.WriteTraceLine = (message, displayName) => { Console.WriteLine($"{message} {displayName}"); };
             }
 
-            var optionsBuilder = new DbContextOptionsBuilder<SchildNRWContext>();
+            DataConnection.DefaultSettings = new DatabaseSettings(connectionString);
+        }
 
-            if (databaseType == DatabaseType.MSSQL)
+        public Task<List<Grade>> GetGradesAsync() => GetGradesAsync(new VersetzungGradeConverter());
+
+        private Task<List<Grade>> GetGradesAsync(IConverter<Versetzung, Grade> converter)
+        {
+            return Task.Run(() =>
             {
-                optionsBuilder.UseSqlServer(connectionString);
-            }
-            else if (databaseType == DatabaseType.MySQL)
+                using (var connection = new SchildNRWConnection())
+                {
+                    var repository = RepositoryFactory.CreateGradeRepository();
+                    return repository.FindAll(connection, converter);
+                }
+            });
+        }
+
+        public Task<SchoolInfo> GetSchoolInfoAsync() => GetSchoolInfoAsync(new EigeneSchuleSchoolInfoConverter());
+
+        private Task<SchoolInfo> GetSchoolInfoAsync(IConverter<EigeneSchule, SchoolInfo> converter)
+        {
+            return Task.Run(() =>
             {
-                optionsBuilder.UseMySql(connectionString);
-            }
-
-            return new SchildNRWContext(optionsBuilder.Options);
+                using (var connection = new SchildNRWConnection())
+                {
+                    var repository = RepositoryFactory.CreateSchoolInfoRepository();
+                    return repository.FindOne(connection, converter);
+                }
+            });
         }
 
-        public void Configure(DatabaseType databaseType, string connectionString)
-        {
-            this.databaseType = databaseType;
-            this.connectionString = connectionString;
-        }
+        public Task<List<Student>> GetStudentsAsync() => GetStudentsAsync(null, null);
 
-        public Task<List<Subject>> GetSubjectsAsync()
-        {
-            return GetSubjectsAsync(new EigeneSchueleFaecherSubjectConverter());
-        }
+        public Task<List<Student>> GetStudentsAsync(int[] status) => GetStudentsAsync(status, null);
 
-        public Task<List<Subject>> GetSubjectsAsync(IConverter<EigeneSchuleFaecher, Subject> converter)
-        {
-            return GetAsync(new SubjectRepository(), converter);
-        }
+        public Task<List<Student>> GetStudentsAsync(DateTime leaveDateThreshold) => GetStudentsAsync(null, leaveDateThreshold);
 
-        public Task<List<Teacher>> GetTeachersAsync(bool onlyVisible = true)
-        {
-            return GetTeachersAsync(onlyVisible, new KLehrerTeacherConverter());
-        }
+        public Task<List<Student>> GetStudentsAsync(int[] status, DateTime? leaveDateThreshold) => GetStudentsAsync(new SchuelerStudentConverter(), status, leaveDateThreshold);
 
-        public Task<List<Teacher>> GetTeachersAsync(bool onlyVisible, IConverter<KLehrer, Teacher> converter)
+        private Task<List<Student>> GetStudentsAsync(IConverter<Schueler, Student> converter, int[] status, DateTime? leaveDateThreshold)
         {
-            return GetAsync(new TeacherRepository(onlyVisible), converter);
-        }
-
-        public Task<List<Grade>> GetGradesAsync()
-        {
-            return GetGradesAsync(new VersetzungGradeConverter(), new KLehrerTeacherConverter());
-        }
-
-        public async Task<List<Grade>> GetGradesAsync(IConverter<Versetzung, Grade> converter, IConverter<KLehrer, Teacher> teacherConverter)
-        {
-            var versetzungsGradeConverter = converter as VersetzungGradeConverter;
-
-            if (versetzungsGradeConverter != null)
+            return Task.Run(() =>
             {
-                var teachers = await GetTeachersAsync(false, teacherConverter).ConfigureAwait(false);
-                versetzungsGradeConverter.SetTeachers(teachers);
-            }
-
-            return await GetAsync(new GradeRepository(), converter).ConfigureAwait(false);
+                using (var connection = new SchildNRWConnection())
+                {
+                    var repository = RepositoryFactory.CreateStudentRepository();
+                    return repository.FindAll(connection, converter, status, leaveDateThreshold);
+                }
+            });
         }
 
-        public Task<List<TeacherSubjects>> GetTeacherSubjectsAsync(bool onlyVisibleTeachers = true)
+        public Task<List<StudyGroup>> GetStudyGroupsAsync(short year, short section)
         {
-            return GetTeacherSubjectsAsync(onlyVisibleTeachers, new KLehrerNullConverter(), new EigeneSchueleFaecherSubjectConverter());
-        }
-
-        public async Task<List<TeacherSubjects>> GetTeacherSubjectsAsync(bool onlyVisibleTeachers, IConverter<KLehrer, Teacher> teacherConverter, IConverter<EigeneSchuleFaecher, Subject> subjectConverter)
-        {
-            var teachers = await GetTeachersAsync(onlyVisibleTeachers, teacherConverter).ConfigureAwait(false);
-            var subjects = await GetSubjectsAsync(subjectConverter).ConfigureAwait(false);
-
-            return await GetAsync(new TeacherSubjectRepository(teachers, subjects), null);
-        }
-
-        private async Task<List<TResult>> GetAsync<TSource, TResult>(IRepository<TSource, TResult> repository, IConverter<TSource, TResult> converter)
-            where TSource : class
-        {
-            using (var context = GetContext())
+            return Task.Run(() =>
             {
-                return await repository.FindAllAsync(context, converter).ConfigureAwait(false);
-            }
+                using (var connection = new SchildNRWConnection())
+                {
+                    var repository = RepositoryFactory.CreateStudyGroupRepositoy();
+                    return repository.FindAll(connection, year, section);
+                }
+            });
         }
 
-        public Task<List<Student>> GetStudentsAsync()
-        {
-            return GetStudentsAsync(new SchuelerStudentConverter(), new VersetzungGradeConverter(), new KLehrerTeacherConverter());
-        }
+        public Task<List<Subject>> GetSubjectsAsync() => GetSubjectsAsync(new EigeneSchueleFaecherSubjectConverter());
 
-        public async Task<List<Student>> GetStudentsAsync(IConverter<Schueler, Student> converter, IConverter<Versetzung, Grade> gradeConverter, IConverter<KLehrer, Teacher> teacherConverter)
+        private Task<List<Subject>> GetSubjectsAsync(IConverter<EigeneSchuleFaecher, Subject> converter)
         {
-            var schuelerStudentConverter = converter as SchuelerStudentConverter;
-
-            if(schuelerStudentConverter != null)
+            return Task.Run(() =>
             {
-                var grades = await GetGradesAsync(gradeConverter, teacherConverter).ConfigureAwait(false);
-                schuelerStudentConverter.SetGrades(grades);
-            }
-
-            return await GetAsync(new StudentRepository(), converter);
+                using (var connection = new SchildNRWConnection())
+                {
+                    var repository = RepositoryFactory.CreateSubjectRepository();
+                    return repository.FindAll(connection, converter);
+                }
+            });
         }
 
-        public Task<List<Parent>> GetParentsAsync()
-        {
-            return GetParentsAsync(new SchuelerErzAdrParentConverter(), new SchuelerStudentConverter(), new VersetzungGradeConverter());
-        }
+        public Task<List<Teacher>> GetTeachersAsync() => GetTeachersAsync(new KLehrerTeacherConverter());
 
-        public async Task<List<Parent>> GetParentsAsync(IConverter<SchuelerErzAdr, Parent> converter, IConverter<Schueler, Student> studentConverter, IConverter<Versetzung, Grade> gradeConverter)
+        private Task<List<Teacher>> GetTeachersAsync(IConverter<KLehrer, Teacher> converter)
         {
-            var schuelerErzAdrParentConverter = converter as SchuelerErzAdrParentConverter;
-
-            if(schuelerErzAdrParentConverter != null)
+            return Task.Run(() =>
             {
-                schuelerErzAdrParentConverter.SetStudentConverter(studentConverter);
-            }
+                using (var connection = new SchildNRWConnection())
+                {
+                    var repository = RepositoryFactory.CreateTeacherRepository();
+                    return repository.FindAll(connection, converter);
+                }
+            });
+        }
 
-            if(studentConverter is SchuelerStudentConverter)
+        public Task<List<Tuition>> GetTuitionsAsync(short year, short section)
+        {
+            return Task.Run(() =>
             {
-                var grades = await GetGradesAsync(gradeConverter, new KLehrerNullConverter()).ConfigureAwait(false);
-                (studentConverter as SchuelerStudentConverter).SetGrades(grades);
-            }
-
-            return await GetAsync(new ParentRepository(), converter);
+                using (var connection = new SchildNRWConnection())
+                {
+                    var repository = RepositoryFactory.CreateTuitionRepository();
+                    return repository.FindAll(connection, year, section);
+                }
+            });
         }
 
-        public Task<List<Course>> GetCoursesAsync(int? year, int? section)
+        public Task<List<PrivacyCategory>> GetPrivacyCategoriesAsync() => GetPrivacyCategories(new KDatenschutzPrivacyCategoryConverter());
+
+        private Task<List<PrivacyCategory>> GetPrivacyCategories(IConverter<KDatenschutz, PrivacyCategory> converter)
         {
-            return GetCoursesAsync(year, section, new KurseCourseConverter(), new SchuelerLeistungsdatenStudentMembershipConverter(), new KLehrerTeacherConverter(), new EigeneSchueleFaecherSubjectConverter(), new VersetzungGradeConverter(), new SchuelerStudentConverter());
-        }
-
-        public async Task<List<Course>> GetCoursesAsync(int? year, int? section, IConverter<Kurse, Course> converter, IConverter<SchuelerLeistungsdaten, StudentCourseMembership> membershipConverter, IConverter<KLehrer, Teacher> teacherConverter, IConverter<EigeneSchuleFaecher, Subject> subjectConverter, IConverter<Versetzung, Grade> gradeConverter, IConverter<Schueler, Student> studentConverter)
-        {
-            var students = await GetStudentsAsync(studentConverter, gradeConverter, new KLehrerNullConverter()).ConfigureAwait(false);
-            var grades = await GetGradesAsync(gradeConverter, new KLehrerNullConverter()).ConfigureAwait(false);
-            var teachers = await GetTeachersAsync(false, teacherConverter).ConfigureAwait(false);
-            var subjects = await GetSubjectsAsync(subjectConverter).ConfigureAwait(false);
-
-            var kurseCourseconverter = converter as KurseCourseConverter;
-
-            if(kurseCourseconverter != null)
+            return Task.Run(() =>
             {
-                kurseCourseconverter.SetSubjects(subjects);
-                kurseCourseconverter.SetTeachers(teachers);
-            }
+                using (var connection = new SchildNRWConnection())
+                {
+                    var repository = RepositoryFactory.CreatePrivacyCategoryRepository();
+                    return repository.FindAll(connection, converter);
+                }
+            });
+        }
 
-            if (membershipConverter is SchuelerLeistungsdatenStudentMembershipConverter)
+        public Task<List<StudentPrivacy>> GetStudentPrivaciesAsync()
+        {
+            return Task.Run(() =>
             {
-                (membershipConverter as SchuelerLeistungsdatenStudentMembershipConverter).SetStudents(students);
-            }
-
-            return await GetAsync(new CourseRepository(year, section, grades, teachers, subjects, membershipConverter), converter);
-        }
-
-        public Task<SchoolInfo> GetSchoolInfoAsync()
-        {
-            return GetSchoolInfoAsync(new EigeneSchuleSchoolInfoConverter());
-        }
-
-        public async Task<SchoolInfo> GetSchoolInfoAsync(IConverter<EigeneSchule, SchoolInfo> converter)
-        {
-            var results = await GetAsync(new SchoolInfoRepository(), converter).ConfigureAwait(false);
-            return results.FirstOrDefault();
+                using (var connection = new SchildNRWConnection())
+                {
+                    var repository = RepositoryFactory.CreateStudentPrivacyRepository();
+                    return repository.FindAll(connection);
+                }
+            });
         }
     }
 }

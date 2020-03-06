@@ -5,15 +5,17 @@ using System.Linq;
 
 namespace SchulIT.SchildExport.Converter
 {
-    public class SchuelerStudentConverter : IConverter<Schueler, Student>
+    class SchuelerStudentConverter : IConverter<Schueler, Student>
     {
-        protected IEnumerable<Grade> Grades { get; private set; }
+        private const char IsFullageFlag = '+';
+
+        protected IEnumerable<GradeRef> Grades { get; private set; }
 
         protected GeschlechtGenderConverter GenderConverter { get; } = new GeschlechtGenderConverter();
 
-        internal void SetGrades(IEnumerable<Grade> grades)
+        internal void SetGrades(IEnumerable<GradeRef> grades)
         {
-            this.Grades = grades;
+            Grades = grades;
         }
 
         public virtual Student Convert(Schueler source)
@@ -28,10 +30,13 @@ namespace SchulIT.SchildExport.Converter
                 Id = source.Id,
                 Firstname = source.Vorname,
                 Lastname = source.Name,
-                Email = source.Email,
+                Email = source.SchulEmail,
+                IsFullage = source.Volljaehrig == IsFullageFlag,
+                Gender = GenderConverter.Convert(source.Geschlecht),
+                Grade = Grades.FirstOrDefault(x => x.Name == source.Klasse),
+                LeaveDate = source.Entlassdatum,
                 Birthday = source.Geburtsdatum,
-                Gender = GenderConverter.Convert(source.Geschlecht?.ToString()),
-                Grade = Grades.FirstOrDefault(x => x.Name == source.Klasse)
+                Status = source.Status.ToString()
             };
         }
     }

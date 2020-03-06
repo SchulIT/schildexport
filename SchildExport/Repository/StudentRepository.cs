@@ -2,16 +2,43 @@
 using SchulIT.SchildExport.Data;
 using SchulIT.SchildExport.Entities;
 using SchulIT.SchildExport.Models;
+using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace SchulIT.SchildExport.Repository
 {
-    internal class StudentRepository : Repository<Schueler, Student>
+    class StudentRepository
     {
-        public override Task<List<Student>> FindAllAsync(SchildNRWContext context, IConverter<Schueler, Student> converter)
+
+        private GradeRefRepository gradeRefRepository;
+
+        public StudentRepository(GradeRefRepository gradeRefRepository)
         {
-            return GetEntitiesAsync(context.Schueler, converter);
+            this.gradeRefRepository = gradeRefRepository;
+        }
+
+        public List<Student> FindAll(SchildNRWConnection connection, IConverter<Schueler, Student> converter, int[] status, DateTime? leaveDate)
+        {
+            var grades = gradeRefRepository.FindAll(connection);
+            var schuelerStudentConverter = converter as SchuelerStudentConverter;
+            schuelerStudentConverter?.SetGrades(grades);
+
+            var students = connection.Schueler;
+
+            if(status != null && status.Length > 0)
+            {
+                students.Where(x => status.Contains((int)x.Status));
+            }
+
+            if (leaveDate != null)
+            {
+                students.Where(x => x.Entlassdatum == null || x.Entlassdatum >= leaveDate);
+            }
+
+            return students.ToList()
+                .Select(x => converter.Convert(x))
+                .ToList();
         }
     }
 }

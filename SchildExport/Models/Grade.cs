@@ -1,13 +1,9 @@
 ﻿namespace SchulIT.SchildExport.Models
 {
-    public class Grade
+    public class Grade : GradeRef, IHasVisibility
     {
-        public int Id { get; set; }
+        public TeacherRef Teacher { get; set; }
 
-        public string Name { get; set; }
-
-        public Teacher Teacher { get; set; }
-
-        public Teacher SubstitudeTeacher { get; set; }
+        public TeacherRef SubstituteTeacher { get; set; }
     }
 }

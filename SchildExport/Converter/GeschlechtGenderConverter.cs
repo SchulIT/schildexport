@@ -1,21 +1,23 @@
-﻿using SchulIT.SchildExport.Models;
+﻿using SchulIT.SchildExport.Entities;
+using SchulIT.SchildExport.Models;
 
 namespace SchulIT.SchildExport.Converter
 {
-    public class GeschlechtGenderConverter : IConverter<string, Gender>
+    class GeschlechtGenderConverter : IConverter<Geschlecht, Gender>
     {
-        public virtual Gender Convert(string source)
+        public Gender Convert(Geschlecht source)
         {
-            if (source == "3")
+            switch (source)
             {
-                return Gender.Male;
-            }
-            else if (source == "4")
-            {
-                return Gender.Female;
-            }
+                case Geschlecht.Maennlich:
+                    return Gender.Male;
 
-            return Gender.Other;
+                case Geschlecht.Weiblich:
+                    return Gender.Female;
+
+                default:
+                    return Gender.Other;
+            }
         }
     }
 }

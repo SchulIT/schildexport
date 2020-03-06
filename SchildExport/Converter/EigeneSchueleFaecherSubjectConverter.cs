@@ -3,15 +3,18 @@ using SchulIT.SchildExport.Models;
 
 namespace SchulIT.SchildExport.Converter
 {
-    public class EigeneSchueleFaecherSubjectConverter : IConverter<EigeneSchuleFaecher, Subject>
+    class EigeneSchueleFaecherSubjectConverter : IConverter<EigeneSchuleFaecher, Subject>
     {
+        private SichtbarBooleanConverter sichtbarBooleanConverter = new SichtbarBooleanConverter();
+
         public virtual Subject Convert(EigeneSchuleFaecher source)
         {
             return new Subject
             {
                 Id = source.Id,
                 Abbreviation = source.FachKrz,
-                Description = source.Bezeichnung
+                Description = source.Bezeichnung,
+                IsVisible = sichtbarBooleanConverter.Convert(source.Sichtbar)
             };
         }
     }

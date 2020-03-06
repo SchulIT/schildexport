@@ -6,12 +6,8 @@
 
         public string Name { get; set; }
 
-        public int CurrentYear { get; set; }
+        public short? CurrentYear { get; set; }
 
-        public int CurrentSection { get; set; }
-
-        public int NumSections { get; set; }
-
-        public string[] SectionLabels { get; set; }
+        public short? CurrentSection { get; set; }
     }
 }

@@ -1,11 +1,9 @@
-﻿namespace SchulIT.SchildExport.Models
+﻿using System.Collections.Generic;
+
+namespace SchulIT.SchildExport.Models
 {
-    public class Teacher
+    public class Teacher : TeacherRef
     {
-        public int Id { get; set; }
-
-        public string Abbreviation { get; set; }
-
         public string Firstname { get; set; }
 
         public string Lastname { get; set; }
@@ -15,5 +13,9 @@
         public Gender Gender { get; set; }
 
         public string Email { get; set; }
+
+        public ICollection<SubjectRef> Subjects { get; set; }
+
+        public ICollection<TeacherSectionData> SectionData { get; set; }
     }
 }

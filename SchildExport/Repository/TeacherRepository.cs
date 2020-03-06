@@ -1,32 +1,68 @@
-﻿using SchulIT.SchildExport.Converter;
+﻿using LinqToDB;
+using SchulIT.SchildExport.Converter;
 using SchulIT.SchildExport.Data;
 using SchulIT.SchildExport.Entities;
 using SchulIT.SchildExport.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SchulIT.SchildExport.Repository
 {
-    internal class TeacherRepository : Repository<KLehrer, Teacher>
+    class TeacherRepository
     {
-        private bool onlyVisible;
 
-        public TeacherRepository(bool onlyVisible)
+        private SubjectRefRepository subjectRefRepository;
+
+        public TeacherRepository(SubjectRefRepository subjectRefRepository)
         {
-            this.onlyVisible = onlyVisible;
+            this.subjectRefRepository = subjectRefRepository;
         }
 
-        public override Task<List<Teacher>> FindAllAsync(SchildNRWContext context, IConverter<KLehrer, Teacher> converter)
+        public List<Teacher> FindAll(SchildNRWConnection connection, IConverter<KLehrer, Teacher> converter)
         {
-            var dbSet = context.KLehrer;
+            var subjectRefsDict = subjectRefRepository
+                .FindAll(connection)
+                .ToDictionary(x => x.Abbreviation);
 
-            if (onlyVisible == true)
-            {
-                dbSet.Where(x => x.Sichtbar == "+");
-            }
+            var result = from t in connection.KLehrer
+                         from a in connection.LehrerAbschnittsdaten.InnerJoin(ad => ad.LehrerId == t.Id)
+                         group a by t into x
+                         select new
+                         {
+                             Teacher = x.Key,
+                             SectionData = x.ToList()
+                         };
 
-            return GetEntitiesAsync(dbSet, converter);
+            var teachersSubjects = (from t in connection.KLehrer
+                                    from l in connection.LehrerLehramtLehrbef.InnerJoin(lb => lb.LehrerId == t.Id)
+                                    group l by t into x
+                                    select new
+                                    {
+                                        TeacherId = x.Key.Id,
+                                        Subjects = x.ToList()
+                                    }).ToList();
+
+            return result
+                .ToList()
+                .Select(x =>
+                {
+                    var teacher = x.Teacher;
+                    teacher.Abschnittsdaten = x.SectionData.AsEnumerable();
+                    return teacher;
+                })
+                .Select(x => converter.Convert(x))
+                .Select(teacher =>
+                {
+                    teacher.Subjects = teachersSubjects
+                        .FirstOrDefault(x => x.TeacherId == teacher.Id)
+                        ?.Subjects
+                        .Select(x => subjectRefsDict.ContainsKey(x.LehrbefKrz) ? subjectRefsDict[x.LehrbefKrz] : null)
+                        .Where(x => x != null)
+                        .ToList();
+
+                    return teacher;
+                })
+                .ToList();
         }
     }
 }

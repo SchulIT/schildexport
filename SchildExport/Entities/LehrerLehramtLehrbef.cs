@@ -1,9 +1,14 @@
-﻿namespace SchulIT.SchildExport.Entities
+﻿using LinqToDB.Mapping;
+
+namespace SchulIT.SchildExport.Entities
 {
-    public partial class LehrerLehramtLehrbef
+    [Table(Name = "LehrerLehramtLehrbef")]
+    class LehrerLehramtLehrbef
     {
+        [Column(Name = "Lehrer_ID")]
         public int LehrerId { get; set; }
 
+        [Column(Name = "LehrbefKrz")]
         public string LehrbefKrz { get; set; }
     }
 }

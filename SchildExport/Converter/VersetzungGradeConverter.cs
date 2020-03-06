@@ -5,11 +5,13 @@ using System.Linq;
 
 namespace SchulIT.SchildExport.Converter
 {
-    public class VersetzungGradeConverter : IConverter<Versetzung, Grade>
+    class VersetzungGradeConverter : IConverter<Versetzung, Grade>
     {
-        protected IEnumerable<Teacher> Teachers { get; private set; }
+        private SichtbarBooleanConverter sichtbarBooleanConverter = new SichtbarBooleanConverter();
 
-        internal void SetTeachers(IEnumerable<Teacher> teachers)
+        protected IEnumerable<TeacherRef> Teachers { get; private set; }
+
+        internal void SetTeachers(IEnumerable<TeacherRef> teachers)
         {
             Teachers = teachers;
         }
@@ -20,8 +22,9 @@ namespace SchulIT.SchildExport.Converter
             {
                 Id = source.Id,
                 Name = source.Klasse,
-                Teacher = Teachers?.FirstOrDefault(t => t != null && t.Abbreviation == source.KlassenlehrerKrz),
-                SubstitudeTeacher = Teachers?.FirstOrDefault(t => t != null && t.Abbreviation == source.StvKlassenlehrerKrz)
+                Teacher = Teachers?.FirstOrDefault(t => t != null && t.Acronym == source.KlassenlehrerKrz),
+                SubstituteTeacher = Teachers?.FirstOrDefault(t => t != null && t.Acronym == source.StvKlassenlehrerKrz),
+                IsVisible = sichtbarBooleanConverter.Convert(source.Sichtbar)
             };
         }
     }

@@ -3,15 +3,29 @@ using SchulIT.SchildExport.Data;
 using SchulIT.SchildExport.Entities;
 using SchulIT.SchildExport.Models;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.Linq;
 
 namespace SchulIT.SchildExport.Repository
 {
-    internal class GradeRepository : Repository<Versetzung, Grade>
+    class GradeRepository
     {
-        public override Task<List<Grade>> FindAllAsync(SchildNRWContext context, IConverter<Versetzung, Grade> converter)
+        private TeacherRefRepository teacherRefRepository;
+
+        public GradeRepository(TeacherRefRepository teacherRefRepository)
         {
-            return GetEntitiesAsync(context.Versetzung, converter);
+            this.teacherRefRepository = teacherRefRepository;
+        }
+
+        public List<Grade> FindAll(SchildNRWConnection connection, IConverter<Versetzung, Grade> converter)
+        {
+            var teachers = teacherRefRepository.FindAll(connection);
+            var versetzungGradeConverter = (converter as VersetzungGradeConverter);
+            versetzungGradeConverter?.SetTeachers(teachers);
+
+            return connection
+                .Versetzung
+                .Select(x => converter.Convert(x))
+                .ToList();
         }
     }
 }

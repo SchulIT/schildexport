@@ -1,8 +1,5 @@
 ﻿using Newtonsoft.Json;
 using SchulIT.SchildExport;
-using SchulIT.SchildExport.Converter;
-using SchulIT.SchildExport.Data;
-using System;
 using System.Threading.Tasks;
 
 namespace SchildExport.Console
@@ -16,7 +13,7 @@ namespace SchildExport.Console
 
             WriteLine("Connecting to database...");
             var schildExport = new Exporter();
-            schildExport.Configure(DatabaseType.MSSQL,connectionString);
+            schildExport.Configure(connectionString, true);
 
             bool isExited = false;
 
@@ -26,17 +23,18 @@ namespace SchildExport.Console
                 WriteLine("Choose what to export:");
                 WriteLine("[0] quit");
                 WriteLine("[1] students");
-                WriteLine("[2] parents");
-                WriteLine("[3] teachers");
-                WriteLine("[4] subjects");
-                WriteLine("[5] grades");
-                WriteLine("[6] teacher subjects");
-                WriteLine("[7] courses");
-                WriteLine("[8] school info");
+                WriteLine("[2] privacy categories");
+                WriteLine("[3] student privacies");
+                WriteLine("[4] teachers");
+                WriteLine("[5] subjects");
+                WriteLine("[6] grades");
+                WriteLine("[7] study groups");
+                WriteLine("[8] tuitions");
+                WriteLine("[9] school info");
 
                 int choice = ReadInt();
 
-                if (choice < 0 || choice > 6)
+                if (choice < 0 || choice > 9)
                 {
                     WriteError("Please chose a valid option.");
                 }
@@ -49,32 +47,32 @@ namespace SchildExport.Console
 
                     case 1:
                         WriteLine("Exporting students...");
-                        WriteJson(GetResult(schildExport.GetStudentsAsync(new CustomSchuelerStudentConverter(), new VersetzungGradeConverter(), new KLehrerNullConverter())));
+                        WriteJson(GetResult(schildExport.GetStudentsAsync()));
                         break;
 
                     case 2:
-                        WriteLine("Exporting parents...");
-                        WriteJson(GetResult(schildExport.GetParentsAsync()));
+                        WriteLine("Exporting privacy categories...");
+                        WriteJson(GetResult(schildExport.GetPrivacyCategoriesAsync()));
                         break;
 
                     case 3:
-                        WriteLine("Exporting teachers...");
-                        WriteJson(GetResult(schildExport.GetTeachersAsync(true, new CustomKLehrerTeacherConverter())));
+                        WriteLine("Exporting student privacies");
+                        WriteJson(GetResult(schildExport.GetStudentPrivaciesAsync()));
                         break;
 
                     case 4:
+                        WriteLine("Exporting teachers...");
+                        WriteJson(GetResult(schildExport.GetTeachersAsync()));
+                        break;
+
+                    case 5:
                         WriteLine("Exporting subjects...");
                         WriteJson(GetResult(schildExport.GetSubjectsAsync()));
                         break;
 
-                    case 5:
+                    case 6:
                         WriteLine("Exporting grades...");
                         WriteJson(GetResult(schildExport.GetGradesAsync()));
-                        break;
-
-                    case 6:
-                        WriteLine("Exporting teacher grades...");
-                        WriteJson(GetResult(schildExport.GetTeacherSubjectsAsync()));
                         break;
 
                     case 7:
@@ -83,10 +81,19 @@ namespace SchildExport.Console
                         WriteLine($"Acamdemic year: {info.CurrentYear}");
                         WriteLine($"Acamdemic year section: {info.CurrentSection}");
 
-                        WriteJson(GetResult(schildExport.GetCoursesAsync(info.CurrentYear, info.CurrentSection)));
+                        WriteJson(GetResult(schildExport.GetStudyGroupsAsync(info.CurrentYear.Value, info.CurrentSection.Value)));
                         break;
 
                     case 8:
+                        WriteLine("Get current academic year info...");
+                        info = GetResult(schildExport.GetSchoolInfoAsync());
+                        WriteLine($"Acamdemic year: {info.CurrentYear}");
+                        WriteLine($"Acamdemic year section: {info.CurrentSection}");
+
+                        WriteJson(GetResult(schildExport.GetTuitionsAsync(info.CurrentYear.Value, info.CurrentSection.Value)));
+                        break;
+
+                    case 9:
                         WriteLine("Get current academic year info...");
                         WriteJson(GetResult(schildExport.GetSchoolInfoAsync()));
                         break;

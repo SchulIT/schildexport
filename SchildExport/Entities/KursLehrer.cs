@@ -1,16 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LinqToDB.Mapping;
 
 namespace SchulIT.SchildExport.Entities
 {
-    public partial class KursLehrer
+    [Table(Name = "KursLehrer")]
+    class KursLehrer
     {
+        [Column(Name = "Kurs_ID"), PrimaryKey]
         public int KursId { get; set; }
-        public int LehrerId { get; set; }
-        public double? Anteil { get; set; }
-        public int? SchulnrEigner { get; set; }
 
-        public virtual Kurse Kurs { get; set; }
-        public virtual KLehrer Lehrer { get; set; }
+        [Column(Name = "Lehrer_ID"), PrimaryKey]
+        public int LehrerId { get; set; }
+
+        [Column(Name = "Anteil")]
+        public double Anteil { get; set; }
     }
 }
