@@ -60,6 +60,11 @@ namespace SchulIT.SchildExport.Repository
                         .Where(x => x != null)
                         .ToList();
 
+                    if(teacher.Subjects == null)
+                    {
+                        teacher.Subjects = new List<SubjectRef>();
+                    }
+
                     return teacher;
                 })
                 .ToList();

@@ -24,19 +24,19 @@ namespace SchulIT.SchildExport.Repository
             var schuelerStudentConverter = converter as SchuelerStudentConverter;
             schuelerStudentConverter?.SetGrades(grades);
 
-            var students = connection.Schueler;
+            var students = connection.Schueler.ToList();
 
             if(status != null && status.Length > 0)
             {
-                students.Where(x => status.Contains((int)x.Status));
+                students = students.Where(x => status.Contains((int)x.Status)).ToList();
             }
 
             if (leaveDate != null)
             {
-                students.Where(x => x.Entlassdatum == null || x.Entlassdatum >= leaveDate);
+                students = students.Where(x => x.Entlassdatum == null || x.Entlassdatum >= leaveDate).ToList();
             }
 
-            return students.ToList()
+            return students
                 .Select(x => converter.Convert(x))
                 .ToList();
         }

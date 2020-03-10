@@ -11,10 +11,12 @@ namespace SchulIT.SchildExport.Repository
         private const string GradeStudyGroupMembershipType = "PUK";
 
         private GradeRefRepository gradeRefRepository;
+        private SubjectRefRepository subjectRefRepository;
 
-        public StudyGroupRepository(GradeRefRepository gradeRefRepository)
+        public StudyGroupRepository(GradeRefRepository gradeRefRepository, SubjectRefRepository subjectRefRepository)
         {
             this.gradeRefRepository = gradeRefRepository;
+            this.subjectRefRepository = subjectRefRepository;
         }
 
         public List<StudyGroup> FindAll(SchildNRWConnection connection, short year, short section)
@@ -88,6 +90,8 @@ namespace SchulIT.SchildExport.Repository
 
         private List<StudyGroup> GetCourseStudyGroups(SchildNRWConnection connection, IEnumerable<GradeRef> gradeRefs, short year, short section)
         {
+            var subjectRefs = subjectRefRepository.FindAll(connection);
+
             var results = from a in connection.SchuelerLernabschnittsdaten
                           from l in connection.SchuelerLeistungsdaten.InnerJoin(sld => sld.AbschnittId == a.Id)
                           from c in connection.Kurse.InnerJoin(k => k.Id == l.KursId)

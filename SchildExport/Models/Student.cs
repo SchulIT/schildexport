@@ -10,7 +10,7 @@ namespace SchulIT.SchildExport.Models
 
         public string Email { get; set; }
 
-        public bool IsFullage { get; set; }
+        public bool IsFullAged { get; set; }
 
         public DateTime? Birthday { get; set; }
 

@@ -31,7 +31,7 @@ namespace SchulIT.SchildExport.Converter
                 Firstname = source.Vorname,
                 Lastname = source.Name,
                 Email = source.SchulEmail,
-                IsFullage = source.Volljaehrig == IsFullageFlag,
+                IsFullAged = source.Volljaehrig == IsFullageFlag,
                 Gender = GenderConverter.Convert(source.Geschlecht),
                 Grade = Grades.FirstOrDefault(x => x.Name == source.Klasse),
                 LeaveDate = source.Entlassdatum,
