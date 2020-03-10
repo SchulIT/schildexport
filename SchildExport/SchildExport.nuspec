@@ -12,8 +12,10 @@
     <copyright>SchulIT</copyright>
     <tags>Schild NRW Schulverwaltung Export</tags>
     <dependencies>
-        <dependency id="Microsoft.EntityFrameworkCore.SqlServer" version="[2.2,3.0)" />
-        <dependency id="Pomelo.EntityFrameworkCore.MySql" version="[2.2,3.0)" />
+        <group targetFramework=".NETStandard2.0">
+            <dependency id="linq2db" version="[2.9,3.0)" />
+            <dependency id="linq2db.SqlServer" version="[2.9,3.0)" />
+        </group>
     </dependencies>
     
   </metadata>
