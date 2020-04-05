@@ -57,7 +57,7 @@ namespace SchildExport.Console
 
                     case 3:
                         WriteLine("Exporting student privacies");
-                        WriteJson(GetResult(schildExport.GetStudentPrivaciesAsync()));
+                        WriteJson(GetResult(schildExport.GetStudentPrivaciesAsync(GetResult(schildExport.GetStudentsAsync()))));
                         break;
 
                     case 4:
@@ -81,7 +81,7 @@ namespace SchildExport.Console
                         WriteLine($"Acamdemic year: {info.CurrentYear}");
                         WriteLine($"Acamdemic year section: {info.CurrentSection}");
 
-                        WriteJson(GetResult(schildExport.GetStudyGroupsAsync(info.CurrentYear.Value, info.CurrentSection.Value)));
+                        WriteJson(GetResult(schildExport.GetStudyGroupsAsync(GetResult(schildExport.GetStudentsAsync()), info.CurrentYear.Value, info.CurrentSection.Value)));
                         break;
 
                     case 8:
@@ -90,7 +90,7 @@ namespace SchildExport.Console
                         WriteLine($"Acamdemic year: {info.CurrentYear}");
                         WriteLine($"Acamdemic year section: {info.CurrentSection}");
 
-                        WriteJson(GetResult(schildExport.GetTuitionsAsync(info.CurrentYear.Value, info.CurrentSection.Value)));
+                        WriteJson(GetResult(schildExport.GetTuitionsAsync(GetResult(schildExport.GetStudentsAsync()), info.CurrentYear.Value, info.CurrentSection.Value)));
                         break;
 
                     case 9:
