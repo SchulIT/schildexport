@@ -19,9 +19,9 @@ namespace SchulIT.SchildExport.Repository
             this.subjectRefRepository = subjectRefRepository;
         }
 
-        public List<Tuition> FindAll(SchildNRWConnection connection, short year, short section)
+        public List<Tuition> FindAll(SchildNRWConnection connection, IEnumerable<Student> currentStudents, short year, short section)
         {
-            var studyGroups = studyGroupRepository.FindAll(connection, year, section);
+            var studyGroups = studyGroupRepository.FindAll(connection, currentStudents, year, section);
             var teacherRefs = teacherRefRepository.FindAll(connection);
             var subjectRefs = subjectRefRepository.FindAll(connection);
             var additionalTeachers = (from l in connection.KursLehrer

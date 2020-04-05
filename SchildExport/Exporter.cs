@@ -71,14 +71,14 @@ namespace SchulIT.SchildExport
             });
         }
 
-        public Task<List<StudyGroup>> GetStudyGroupsAsync(short year, short section)
+        public Task<List<StudyGroup>> GetStudyGroupsAsync(IEnumerable<Student> currentStudents, short year, short section)
         {
             return Task.Run(() =>
             {
                 using (var connection = new SchildNRWConnection())
                 {
                     var repository = RepositoryFactory.CreateStudyGroupRepositoy();
-                    return repository.FindAll(connection, year, section);
+                    return repository.FindAll(connection, currentStudents, year, section);
                 }
             });
         }
@@ -111,14 +111,14 @@ namespace SchulIT.SchildExport
             });
         }
 
-        public Task<List<Tuition>> GetTuitionsAsync(short year, short section)
+        public Task<List<Tuition>> GetTuitionsAsync(IEnumerable<Student> currentStudents, short year, short section)
         {
             return Task.Run(() =>
             {
                 using (var connection = new SchildNRWConnection())
                 {
                     var repository = RepositoryFactory.CreateTuitionRepository();
-                    return repository.FindAll(connection, year, section);
+                    return repository.FindAll(connection, currentStudents, year, section);
                 }
             });
         }
@@ -137,14 +137,14 @@ namespace SchulIT.SchildExport
             });
         }
 
-        public Task<List<StudentPrivacy>> GetStudentPrivaciesAsync()
+        public Task<List<StudentPrivacy>> GetStudentPrivaciesAsync(IEnumerable<Student> currentStudents)
         {
             return Task.Run(() =>
             {
                 using (var connection = new SchildNRWConnection())
                 {
                     var repository = RepositoryFactory.CreateStudentPrivacyRepository();
-                    return repository.FindAll(connection);
+                    return repository.FindAll(connection, currentStudents);
                 }
             });
         }

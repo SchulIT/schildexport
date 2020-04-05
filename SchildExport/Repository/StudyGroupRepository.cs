@@ -12,25 +12,28 @@ namespace SchulIT.SchildExport.Repository
 
         private GradeRefRepository gradeRefRepository;
         private SubjectRefRepository subjectRefRepository;
+        private StudentRepository studentRepository;
 
-        public StudyGroupRepository(GradeRefRepository gradeRefRepository, SubjectRefRepository subjectRefRepository)
+        public StudyGroupRepository(GradeRefRepository gradeRefRepository, SubjectRefRepository subjectRefRepository, StudentRepository studentRepository)
         {
             this.gradeRefRepository = gradeRefRepository;
             this.subjectRefRepository = subjectRefRepository;
+            this.studentRepository = studentRepository;
         }
 
-        public List<StudyGroup> FindAll(SchildNRWConnection connection, short year, short section)
+        public List<StudyGroup> FindAll(SchildNRWConnection connection, IEnumerable<Student> students, short year, short section)
         {
             var gradeRefs = gradeRefRepository.FindAll(connection);
+            var currentStudentIds = students.Select(x => x.Id).Distinct().ToList();
 
             var studyGroups = new List<StudyGroup>();
-            studyGroups.AddRange(GetGradeStudyGroups(connection, gradeRefs, year, section));
-            studyGroups.AddRange(GetCourseStudyGroups(connection, gradeRefs, year, section));
+            studyGroups.AddRange(GetGradeStudyGroups(connection, gradeRefs, currentStudentIds, year, section));
+            studyGroups.AddRange(GetCourseStudyGroups(connection, gradeRefs, currentStudentIds, year, section));
 
             return studyGroups;
         }
 
-        private List<StudyGroup> GetGradeStudyGroups(SchildNRWConnection connection, IEnumerable<GradeRef> gradeRefs, short year, short section)
+        private List<StudyGroup> GetGradeStudyGroups(SchildNRWConnection connection, IEnumerable<GradeRef> gradeRefs, IEnumerable<int> currentStudentIds, short year, short section)
         {
             var results = from a in connection.SchuelerLernabschnittsdaten
                           from l in connection.SchuelerLeistungsdaten.InnerJoin(sld => sld.AbschnittId == a.Id)
@@ -42,6 +45,7 @@ namespace SchulIT.SchildExport.Repository
                               StudentData = x.ToList()
                           };
 
+            
             var studyGroups = new List<StudyGroup>();
 
             foreach (var result in results)
@@ -66,7 +70,7 @@ namespace SchulIT.SchildExport.Repository
 
                 foreach (var data in result.StudentData)
                 {
-                    if (!studentIds.Contains(data.SchuelerId))
+                    if (!studentIds.Contains(data.SchuelerId) && currentStudentIds.Contains(data.SchuelerId))
                     {
                         var membership = new StudyGroupMembership
                         {
@@ -88,7 +92,7 @@ namespace SchulIT.SchildExport.Repository
             return studyGroups;
         }
 
-        private List<StudyGroup> GetCourseStudyGroups(SchildNRWConnection connection, IEnumerable<GradeRef> gradeRefs, short year, short section)
+        private List<StudyGroup> GetCourseStudyGroups(SchildNRWConnection connection, IEnumerable<GradeRef> gradeRefs, IEnumerable<int> currentStudentIds, short year, short section)
         {
             var subjectRefs = subjectRefRepository.FindAll(connection);
 
@@ -135,7 +139,7 @@ namespace SchulIT.SchildExport.Repository
                             studyGroup.Grades.Add(gradeRef);
                         }
 
-                        if (!studentIds.Contains(m.Membership.StudentId))
+                        if (!studentIds.Contains(m.Membership.StudentId) && currentStudentIds.Contains(m.Membership.StudentId))
                         {
                             var membership = new StudyGroupMembership
                             {

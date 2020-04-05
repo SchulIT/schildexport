@@ -25,12 +25,12 @@ namespace SchulIT.SchildExport
 
         Task<List<Grade>> GetGradesAsync();
 
-        Task<List<StudyGroup>> GetStudyGroupsAsync(short year, short section);
+        Task<List<StudyGroup>> GetStudyGroupsAsync(IEnumerable<Student> currentStudents, short year, short section);
 
-        Task<List<Tuition>> GetTuitionsAsync(short year, short section);
+        Task<List<Tuition>> GetTuitionsAsync(IEnumerable<Student> currentStudents, short year, short section);
 
         Task<List<PrivacyCategory>> GetPrivacyCategoriesAsync();
 
-        Task<List<StudentPrivacy>> GetStudentPrivaciesAsync();
+        Task<List<StudentPrivacy>> GetStudentPrivaciesAsync(IEnumerable<Student> currentStudents);
     }
 }

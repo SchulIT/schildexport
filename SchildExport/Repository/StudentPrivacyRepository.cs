@@ -10,8 +10,10 @@ namespace SchulIT.SchildExport.Repository
         private char ApprovedChar = '+';
         private char NotApprovedChar = '-';
 
-        public List<StudentPrivacy> FindAll(SchildNRWConnection connection)
+        public List<StudentPrivacy> FindAll(SchildNRWConnection connection, IEnumerable<Student> currentStudents)
         {
+            var currentStudentIds = currentStudents.Select(x => x.Id).Distinct().ToList();
+
             return connection.SchuelerDatenschutz
                 .GroupBy(x => x.SchuelerId)
                 .ToList()
@@ -24,6 +26,7 @@ namespace SchulIT.SchildExport.Repository
                         NotApproved = x.Where(y => y.Status == NotApprovedChar).Select(y => new PrivacyCategoryRef { Id = y.DatenschutzId }).ToList()
                     };
                 })
+                .Where(x => currentStudentIds.Contains(x.Student.Id))
                 .ToList();
         }
     }
