@@ -76,13 +76,13 @@ Anschließend können die entsprechenden Methoden genutzt werden, um Daten aus d
 ```csharp
 var students = await exporter.GetStudentsAsync(); // optionale Parameter: int[] status, DateTime leaveDateThreshold
 var privacyCategories = await exporter.GetPrivacyCategoriesAsync();
-var studentPrivacies = await exporter.GetStudentPrivaciesAsync();
+var studentPrivacies = await exporter.GetStudentPrivaciesAsync(students);
 var teachers = await exporter.GetTeachersAsync();
 var subjects = await exporter.GetSubjectsAsync();
 var grades = await exporter.GetGradesAsync();
 var schoolInfo = await exporter.GetSchoolInfoAsync());
-var studyGroups = await exporter.GetStudyGroupsAsync(info.CurrentYear.Value, info.CurrentSection.Value);
-var tuitions = await exporter.GetTuitionsAsync(info.CurrentYear.Value, info.CurrentSection.Value);
+var studyGroups = await exporter.GetStudyGroupsAsync(students, info.CurrentYear.Value, info.CurrentSection.Value);
+var tuitions = await exporter.GetTuitionsAsync(students, info.CurrentYear.Value, info.CurrentSection.Value);
 ```
 
 ## Sichtbarkeiten ausblenden
