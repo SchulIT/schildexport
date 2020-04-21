@@ -12,13 +12,11 @@ namespace SchulIT.SchildExport.Repository
 
         private GradeRefRepository gradeRefRepository;
         private SubjectRefRepository subjectRefRepository;
-        private StudentRepository studentRepository;
 
-        public StudyGroupRepository(GradeRefRepository gradeRefRepository, SubjectRefRepository subjectRefRepository, StudentRepository studentRepository)
+        public StudyGroupRepository(GradeRefRepository gradeRefRepository, SubjectRefRepository subjectRefRepository)
         {
             this.gradeRefRepository = gradeRefRepository;
             this.subjectRefRepository = subjectRefRepository;
-            this.studentRepository = studentRepository;
         }
 
         public List<StudyGroup> FindAll(SchildNRWConnection connection, IEnumerable<Student> students, short year, short section)
@@ -27,8 +25,50 @@ namespace SchulIT.SchildExport.Repository
             var currentStudentIds = students.Select(x => x.Id).Distinct().ToList();
 
             var studyGroups = new List<StudyGroup>();
-            studyGroups.AddRange(GetGradeStudyGroups(connection, gradeRefs, currentStudentIds, year, section));
+            var gradeStudyGroups = GetGradeStudyGroups(connection, gradeRefs, currentStudentIds, year, section);
+            studyGroups.AddRange(gradeStudyGroups);
+            studyGroups.AddRange(GetRemainingGradeStudyGroups(gradeStudyGroups, gradeRefs, students));
+            
             studyGroups.AddRange(GetCourseStudyGroups(connection, gradeRefs, currentStudentIds, year, section));
+
+            return studyGroups;
+        }
+
+        private List<StudyGroup> GetRemainingGradeStudyGroups(List<StudyGroup> existingStudyGroups, List<GradeRef> gradeRefs, IEnumerable<Student> students)
+        {
+            var studyGroups = new List<StudyGroup>();
+
+            var existingGrades = existingStudyGroups.Select(x => x.Grades.FirstOrDefault()).Where(x => x != null).Select(x => x.Id);
+
+            foreach(var gradeRef in gradeRefs)
+            {
+                if (existingGrades.Contains(gradeRef.Id))
+                {
+                    continue;
+                }
+
+                var studyGroup = new StudyGroup
+                {
+                    Id = gradeRef.Id,
+                    Name = gradeRef.Name,
+                    Type = StudyGroupType.Grade,
+                    Grades = new List<GradeRef> { gradeRef }
+                };
+
+                foreach(var student in students.Where(x => x.Grade != null && x.Grade.Id == gradeRef.Id))
+                {
+                    studyGroup.Memberships.Add(new StudyGroupMembership
+                    {
+                        Student = student,
+                        Type = null
+                    });
+                }
+
+                if (studyGroup.Memberships.Count > 0)
+                {
+                    studyGroups.Add(studyGroup);
+                }
+            }
 
             return studyGroups;
         }

@@ -44,7 +44,7 @@
 
         public static StudyGroupRepository CreateStudyGroupRepositoy()
         {
-            return new StudyGroupRepository(CreateGradeRefRepository(), CreateSubjectRefRepository(), CreateStudentRepository());
+            return new StudyGroupRepository(CreateGradeRefRepository(), CreateSubjectRefRepository());
         }
 
         public static TuitionRepository CreateTuitionRepository()
