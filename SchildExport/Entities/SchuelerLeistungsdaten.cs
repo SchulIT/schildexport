@@ -25,5 +25,8 @@ namespace SchulIT.SchildExport.Entities
 
         [Column(Name = "Kurs_ID")]
         public int? KursId { get; set; }
+
+        [Column(Name = "Wochenstunden")]
+        public int Wochenstunden { get; set; }
     }
 }

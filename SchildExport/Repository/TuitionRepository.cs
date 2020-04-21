@@ -36,7 +36,7 @@ namespace SchulIT.SchildExport.Repository
             var results = from a in connection.SchuelerLernabschnittsdaten
                           from l in connection.SchuelerLeistungsdaten.InnerJoin(sld => sld.AbschnittId == a.Id)
                           from c in connection.Kurse.Where(x => x.Id == l.KursId).DefaultIfEmpty()
-                          where a.Jahr == year && a.Abschnitt == section
+                          where a.Jahr == year && a.Abschnitt == section && l.Wochenstunden > 0
                           select new
                           {
                               CourseId = l.KursId,
