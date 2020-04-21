@@ -1,4 +1,5 @@
-﻿using SchulIT.SchildExport.Data;
+﻿using LinqToDB;
+using SchulIT.SchildExport.Data;
 using SchulIT.SchildExport.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +15,11 @@ namespace SchulIT.SchildExport.Repository
         {
             var currentStudentIds = currentStudents.Select(x => x.Id).Distinct().ToList();
 
-            return connection.SchuelerDatenschutz
+            var results = from sd in connection.SchuelerDatenschutz
+                          from d in connection.KDatenschutz.InnerJoin(x => x.Id == sd.DatenschutzId)
+                          select sd;
+
+            return results
                 .GroupBy(x => x.SchuelerId)
                 .ToList()
                 .Select(x =>
