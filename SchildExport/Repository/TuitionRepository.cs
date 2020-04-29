@@ -42,7 +42,7 @@ namespace SchulIT.SchildExport.Repository
                               CourseId = l.KursId,
                               CourseName = c.KurzBez,
                               SubjectId = l.FachId,
-                              TeacherAcronym = l.FachLeher,
+                              TeacherAcronym = string.IsNullOrEmpty(l.FachLeher) ? null : l.FachLeher,
                               AdditionalTeacher = l.Zusatzkraft,
                               Grade = a.Klasse
                           };
