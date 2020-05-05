@@ -110,7 +110,7 @@ namespace SchulIT.SchildExport.Repository
 
                 foreach (var data in result.StudentData)
                 {
-                    if (!studentIds.Contains(data.SchuelerId) && currentStudentIds.Contains(data.SchuelerId))
+                    if (!studentIds.Contains(data.SchuelerId) && currentStudentIds.Contains(data.SchuelerId) && data.SemesterWertung == '+')
                     {
                         var membership = new StudyGroupMembership
                         {
@@ -150,7 +150,8 @@ namespace SchulIT.SchildExport.Repository
                               {
                                   StudentId = a.SchuelerId,
                                   Grade = a.Klasse,
-                                  Type = l.Kursart
+                                  Type = l.Kursart,
+                                  a.SemesterWertung
                               }
                           };
 
@@ -179,7 +180,7 @@ namespace SchulIT.SchildExport.Repository
                             studyGroup.Grades.Add(gradeRef);
                         }
 
-                        if (!studentIds.Contains(m.Membership.StudentId) && currentStudentIds.Contains(m.Membership.StudentId))
+                        if (!studentIds.Contains(m.Membership.StudentId) && currentStudentIds.Contains(m.Membership.StudentId) && m.Membership.SemesterWertung == '+')
                         {
                             var membership = new StudyGroupMembership
                             {

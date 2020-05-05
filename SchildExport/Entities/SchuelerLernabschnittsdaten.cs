@@ -19,5 +19,8 @@ namespace SchulIT.SchildExport.Entities
 
         [Column(Name = "Klasse")]
         public string Klasse { get; set; }
+
+        [Column(Name = "SemesterWertung")]
+        public char? SemesterWertung { get; set; }
     }
 }
