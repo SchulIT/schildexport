@@ -2,7 +2,7 @@
 
 namespace SchulIT.SchildExport.Entities
 {
-    enum SchuelerStatus
+    public enum SchuelerStatus
     {
         [MapValue(0)]
         Neuaufnahme = 0,
