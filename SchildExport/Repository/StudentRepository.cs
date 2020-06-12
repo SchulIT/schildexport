@@ -1,4 +1,5 @@
-﻿using SchulIT.SchildExport.Converter;
+﻿using LinqToDB;
+using SchulIT.SchildExport.Converter;
 using SchulIT.SchildExport.Data;
 using SchulIT.SchildExport.Entities;
 using SchulIT.SchildExport.Models;
@@ -16,6 +17,20 @@ namespace SchulIT.SchildExport.Repository
         public StudentRepository(GradeRefRepository gradeRefRepository)
         {
             this.gradeRefRepository = gradeRefRepository;
+        }
+
+        public List<Student> FindAll(SchildNRWConnection connection, IConverter<Schueler, Student> converter, short year, short section)
+        {
+            var grades = gradeRefRepository.FindAll(connection);
+            var schuelerStudentConverter = converter as SchuelerStudentConverter;
+            schuelerStudentConverter?.SetGrades(grades);
+
+            var students = (from s in connection.Schueler
+                           from l in connection.SchuelerLernabschnittsdaten.InnerJoin(sld => sld.SchuelerId == s.Id)
+                           where l.Jahr == year && l.Abschnitt == section
+                           select s).Distinct();
+
+            return students.Select(x => schuelerStudentConverter.Convert(x)).ToList();
         }
 
         public List<Student> FindAll(SchildNRWConnection connection, IConverter<Schueler, Student> converter, int[] status, DateTime? leaveDate)

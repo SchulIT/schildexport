@@ -21,6 +21,8 @@ namespace SchulIT.SchildExport
 
         Task<List<Student>> GetStudentsAsync(int[] status, DateTime? leaveDateThreshold);
 
+        Task<List<Student>> GetStudentsAsync(short year, short section);
+
         Task<List<Subject>> GetSubjectsAsync();
 
         Task<List<Grade>> GetGradesAsync();

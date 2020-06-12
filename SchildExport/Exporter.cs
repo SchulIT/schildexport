@@ -148,5 +148,17 @@ namespace SchulIT.SchildExport
                 }
             });
         }
+
+        public Task<List<Student>> GetStudentsAsync(short year, short section)
+        {
+            return Task.Run(() =>
+            {
+                using (var connection = new SchildNRWConnection())
+                {
+                    var repository = RepositoryFactory.CreateStudentRepository();
+                    return repository.FindAll(connection, new SchuelerStudentConverter(), year, section);
+                }
+            });
+        }
     }
 }

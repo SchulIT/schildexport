@@ -17,10 +17,13 @@ namespace SchulIT.SchildExport.Entities
         [Column(Name = "KurzBez")]
         public string KurzBez { get; set; }
 
-        [Column(Name = "JahrgangId")]
+        [Column(Name = "Jahrgang_ID")]
         public int? JahrgangId { get; set; }
 
-        [Column(Name = "FachId")]
+        [Column(Name = "Jahrgaenge")]
+        public string Jahrgaenge { get; set; }
+
+        [Column(Name = "Fach_ID")]
         public int FachId { get; set; }
 
         [Column(Name = "Sichtbar")]

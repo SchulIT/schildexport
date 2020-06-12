@@ -134,68 +134,84 @@ namespace SchulIT.SchildExport.Repository
 
         private List<StudyGroup> GetCourseStudyGroups(SchildNRWConnection connection, IEnumerable<GradeRef> gradeRefs, IEnumerable<int> currentStudentIds, short year, short section)
         {
+            var courses = connection.Kurse.Where(x => x.Jahr == year && x.Abschnitt == section).ToList();
             var subjectRefs = subjectRefRepository.FindAll(connection);
 
-            var results = from a in connection.SchuelerLernabschnittsdaten
-                          from l in connection.SchuelerLeistungsdaten.InnerJoin(sld => sld.AbschnittId == a.Id)
-                          from c in connection.Kurse.InnerJoin(k => k.Id == l.KursId)
-                          where a.Jahr == year && a.Abschnitt == section && l.Kursart != GradeStudyGroupMembershipType
-                          select new
-                          {
-                              CourseId = l.KursId,
-                              CourseName = c.KurzBez,
-                              SubjectId = l.FachId,
-                              TeacherAcronym = string.IsNullOrEmpty(l.FachLeher) ? null : l.FachLeher,
-                              Membership = new
+            var memberships = from a in connection.SchuelerLernabschnittsdaten
+                              from l in connection.SchuelerLeistungsdaten.InnerJoin(sld => sld.AbschnittId == a.Id)
+                              where a.Jahr == year && a.Abschnitt == section && l.Kursart != GradeStudyGroupMembershipType
+                              select new
                               {
+                                  CourseId = l.KursId,
                                   StudentId = a.SchuelerId,
-                                  Grade = a.Klasse,
                                   Type = l.Kursart,
+                                  Grade = a.Klasse,
                                   a.SemesterWertung
-                              }
-                          };
+                              };
 
-            return
-                results
-                .GroupBy(x => new { x.CourseId, x.CourseName, x.SubjectId, x.TeacherAcronym })
-                .ToList()
-                .Select(y =>
+            var studyGroups = new List<StudyGroup>();
+
+            foreach(var course in courses)
+            {
+                var studyGroup = new StudyGroup
                 {
-                    var studyGroup = new StudyGroup
+                    Id = course.Id,
+                    Type = StudyGroupType.Course,
+                    Name = course.KurzBez
+                };
+
+                /**
+                 * Wenn mehrere Jahrgänge hinterlegt wurden, dann füge alle Klassen dieser Jahrgänge ein, unabhängig davon,
+                 * ob SoS dieser Jahrgänge an dem Kurs teilnehmen.
+                 * 
+                 * Wenn es nur einen Jahrgang unter mehrere Jahrgänge gibt, so füge die Klassen nur hinzu, wenn sich der Jahrgang
+                 * von dem "einfachen Jahrgang" eines Kurses unterscheidet.
+                 */ 
+                if(!string.IsNullOrEmpty(course.Jahrgaenge))
+                {
+                    var jahrgaenge = course.Jahrgaenge.Split(',').Select(x => int.Parse(x));
+
+                    foreach(var jahrgang in jahrgaenge)
                     {
-                        Id = y.Key.CourseId,
-                        Type = StudyGroupType.Course,
-                        Name = y.Key.CourseName
-                    };
-
-                    // Save already added student IDs
-                    // TODO: Modify code so we only have distinct memberships?!
-                    var studentIds = new List<int>();
-
-                    foreach (var m in y)
-                    {
-                        var gradeRef = gradeRefs.FirstOrDefault(x => x.Name == m.Membership.Grade);
-                        if (!studyGroup.Grades.Contains(gradeRef))
+                        if(course.JahrgangId != jahrgang)
                         {
-                            studyGroup.Grades.Add(gradeRef);
-                        }
-
-                        if (!studentIds.Contains(m.Membership.StudentId) && currentStudentIds.Contains(m.Membership.StudentId) && m.Membership.SemesterWertung == '+')
-                        {
-                            var membership = new StudyGroupMembership
+                            foreach (var grade in gradeRefs.Where(x => x.GradeYearId == jahrgang))
                             {
-                                Student = new StudentRef { Id = m.Membership.StudentId },
-                                Type = m.Membership.Type
-                            };
-
-                            studyGroup.Memberships.Add(membership);
-                            studentIds.Add(m.Membership.StudentId);
+                                if (!studyGroup.Grades.Contains(grade))
+                                {
+                                    studyGroup.Grades.Add(grade);
+                                }
+                            }
                         }
                     }
+                }
 
-                    return studyGroup;
-                })
-                .ToList();
+                var studentIds = new List<int>();
+
+                foreach(var membership in memberships.Where(x => x.CourseId == course.Id))
+                {
+                    var gradeRef = gradeRefs.FirstOrDefault(x => x.Name == membership.Grade);
+                    if (!studyGroup.Grades.Contains(gradeRef))
+                    {
+                        studyGroup.Grades.Add(gradeRef);
+                    }
+
+                    if (!studentIds.Contains(membership.StudentId))
+                    {
+                        studyGroup.Memberships.Add(new StudyGroupMembership
+                        {
+                            Student = new StudentRef { Id = membership.StudentId },
+                            Type = membership.Type,
+                            Grade = membership.Grade
+                        }) ;
+                        studentIds.Add(membership.StudentId);
+                    }
+                }
+
+                studyGroups.Add(studyGroup);
+            }
+
+            return studyGroups;
         }
     }
 }

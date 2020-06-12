@@ -13,7 +13,7 @@ namespace SchulIT.SchildExport.Repository
         public List<GradeRef> FindAll(SchildNRWConnection connection)
         {
             return connection.Versetzung
-                .Select(x => new GradeRef { Id = x.Id, Name = x.Klasse, IsVisible = sichtbarBooleanConverter.Convert(x.Sichtbar) })
+                .Select(x => new GradeRef { Id = x.Id, Name = x.Klasse, GradeYearId = x.JahrgangId, IsVisible = sichtbarBooleanConverter.Convert(x.Sichtbar) })
                 .ToList();
         }
     }

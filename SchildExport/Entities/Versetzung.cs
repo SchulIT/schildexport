@@ -11,6 +11,9 @@ namespace SchulIT.SchildExport.Entities
         [Column(Name = "ASDKlasse")]
         public string ASDKlasse { get; set; }
 
+        [Column(Name = "Jahrgang_ID")]
+        public int JahrgangId { get; set; }
+
         [Column(Name = "Klasse")]
         public string Klasse { get; set; }
 
