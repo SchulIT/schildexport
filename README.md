@@ -2,6 +2,7 @@
 
 [![NuGet version (SchulIT.SchildExport)](https://img.shields.io/nuget/v/SchulIT.SchildExport.svg?style=flat-square)](https://www.nuget.org/packages/SchulIT.SchildExport/)
 [![Build Status](https://dev.azure.com/schulit/SchildExport/_apis/build/status/SchulIT.schildexport?branchName=master)](https://dev.azure.com/schulit/SchildExport/_build/latest?definitionId=1&branchName=master)
+![.NET Standard 2.1](https://img.shields.io/badge/.NET%20Standard-2.1-brightgreen?style=flat-square)
 
 Mithilfe dieser Bibliothek kann die Schild-Datenbank objekt-orientiert ausgelesen werden. Aktuell können folgende Dinge ausgelesen werden:
 
