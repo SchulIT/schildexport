@@ -11,7 +11,7 @@ namespace SchulIT.SchildExport.Entities
         [Column(Name = "Jahr"), PrimaryKey]
         public short Jahr { get; set; }
 
-        [Column(Name = "Jahr"), PrimaryKey]
+        [Column(Name = "Abschnitt"), PrimaryKey]
         public short Abschnitt { get; set; }
 
         [Column(Name = "Rechtsverhaeltnis")]
