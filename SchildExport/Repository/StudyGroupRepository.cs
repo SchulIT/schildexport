@@ -160,32 +160,6 @@ namespace SchulIT.SchildExport.Repository
                     Name = course.KurzBez
                 };
 
-                /**
-                 * Wenn mehrere Jahrgänge hinterlegt wurden, dann füge alle Klassen dieser Jahrgänge ein, unabhängig davon,
-                 * ob SoS dieser Jahrgänge an dem Kurs teilnehmen.
-                 * 
-                 * Wenn es nur einen Jahrgang unter mehrere Jahrgänge gibt, so füge die Klassen nur hinzu, wenn sich der Jahrgang
-                 * von dem "einfachen Jahrgang" eines Kurses unterscheidet.
-                 */ 
-                if(!string.IsNullOrEmpty(course.Jahrgaenge))
-                {
-                    var jahrgaenge = course.Jahrgaenge.Split(',').Select(x => int.Parse(x));
-
-                    foreach(var jahrgang in jahrgaenge)
-                    {
-                        if(course.JahrgangId != jahrgang)
-                        {
-                            foreach (var grade in gradeRefs.Where(x => x.GradeYearId == jahrgang))
-                            {
-                                if (!studyGroup.Grades.Contains(grade))
-                                {
-                                    studyGroup.Grades.Add(grade);
-                                }
-                            }
-                        }
-                    }
-                }
-
                 var studentIds = new List<int>();
 
                 foreach(var membership in memberships.Where(x => x.CourseId == course.Id))
