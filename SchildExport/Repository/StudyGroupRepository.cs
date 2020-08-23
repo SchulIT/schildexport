@@ -182,6 +182,36 @@ namespace SchulIT.SchildExport.Repository
                     }
                 }
 
+                /**
+                 * Wenn keine Mitglieder im Kurs sind, dann füge alle Jahrgänge an, in denen
+                 * der Kurs potentiell stattfinden kann.
+                 */
+                if (studyGroup.Grades.Count == 0)
+                {
+                    var jahrgaenge = new List<int>();
+
+                    if (!string.IsNullOrEmpty(course.Jahrgaenge))
+                    {
+                        jahrgaenge.AddRange(course.Jahrgaenge.Split(',').Select(x => int.Parse(x)));
+                    }
+                    
+                    if(course.JahrgangId.HasValue)
+                    {
+                        jahrgaenge.Add(course.JahrgangId.Value);
+                    }
+
+                    foreach (var jahrgang in jahrgaenge)
+                    {
+                        foreach (var grade in gradeRefs.Where(x => x.GradeYearId == jahrgang))
+                        {
+                            if (!studyGroup.Grades.Contains(grade))
+                            {
+                                studyGroup.Grades.Add(grade);
+                            }
+                        }
+                    }
+                }
+
                 studyGroups.Add(studyGroup);
             }
 

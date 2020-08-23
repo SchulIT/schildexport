@@ -28,5 +28,8 @@ namespace SchulIT.SchildExport.Entities
 
         [Column(Name = "Sichtbar")]
         public char? Sichtbar { get; set; }
+
+        [Column(Name = "LehrerKrz")]
+        public string LehrerKuerzel { get; set; }
     }
 }

@@ -24,6 +24,7 @@ namespace SchulIT.SchildExport.Repository
             var studyGroups = studyGroupRepository.FindAll(connection, currentStudents, year, section);
             var teacherRefs = teacherRefRepository.FindAll(connection);
             var subjectRefs = subjectRefRepository.FindAll(connection);
+            var courses = connection.Kurse.Where(x => x.Jahr == year && x.Abschnitt == section).ToList();
             var additionalTeachers = (from l in connection.KursLehrer
                                       group l by l.KursId into x
                                       select new
@@ -48,6 +49,7 @@ namespace SchulIT.SchildExport.Repository
                           };
 
             var tuitions = new List<Tuition>();
+            var processedCourses = new List<int>();
 
             // Klassenunterrichte
             tuitions.AddRange(
@@ -83,39 +85,38 @@ namespace SchulIT.SchildExport.Repository
                     })
             );
 
-            // Kursunterrichte
-            tuitions.AddRange(
-                results
-                    .Where(x => x.CourseId != null)
-                    .GroupBy(x => new { x.CourseId, x.CourseName, x.SubjectId, x.TeacherAcronym, x.AdditionalTeacher })
-                    .ToList()
-                    .Select(x =>
+            foreach(var course in courses)
+            {
+                var studyGroup = studyGroups.FirstOrDefault(x => x.Id == course.Id);
+
+                if (studyGroup == null)
+                {
+                    continue;
+                }
+
+                var teacher = teacherRefs.FirstOrDefault(y => y.Acronym == course.LehrerKuerzel);
+
+                var additionalTuitionTeachers = new List<TeacherRef>();
+
+                // Add additional teachers
+                var teachers = additionalTeachers.FirstOrDefault(y => y.CourseId == course.Id);
+
+                if (teachers != null)
+                {
+                    foreach (var additionalTeacher in teachers.TeacherIds)
                     {
-                        var gradeNames = x.Select(y => y.Grade).Distinct().ToList();
-                        var additionalTuitionTeachers = new List<TeacherRef>();
+                        additionalTuitionTeachers.Add(teacherRefs.FirstOrDefault(t => t.Id == additionalTeacher.LehrerId));
+                    }
+                }
 
-                        // Add additional teachers
-                        var teachers = additionalTeachers.FirstOrDefault(y => y.CourseId == x.Key.CourseId);
-
-                        if (teachers != null)
-                        {
-                            foreach (var teacher in teachers.TeacherIds)
-                            {
-                                additionalTuitionTeachers.Add(teacherRefs.FirstOrDefault(t => t.Id == teacher.LehrerId));
-                            }
-                        }
-
-                        var studyGroup = studyGroups.FirstOrDefault(sg => sg.Type == StudyGroupType.Course && sg.Id == x.Key.CourseId);
-
-                        return new Tuition
-                        {
-                            TeacherRef = teacherRefs.FirstOrDefault(t => t.Acronym == x.Key.TeacherAcronym),
-                            SubjectRef = subjectRefs.FirstOrDefault(s => s.Id == x.Key.SubjectId),
-                            StudyGroupRef = studyGroup,
-                            AdditionalTeachersRef = additionalTuitionTeachers.Where(t => t != null).ToList()
-                        };
-                    })
-            );
+                tuitions.Add(new Tuition
+                {
+                    TeacherRef = teacher,
+                    AdditionalTeachersRef = additionalTuitionTeachers,
+                    StudyGroupRef = studyGroup,
+                    SubjectRef = subjectRefs.FirstOrDefault(s => s.Id == course.FachId)
+                });
+            }
 
             return tuitions;
         }
