@@ -31,5 +31,8 @@ namespace SchulIT.SchildExport.Entities
 
         [Column(Name = "LehrerKrz")]
         public string LehrerKuerzel { get; set; }
+
+        [Column(Name = "Zeugnisbez")]
+        public string Zeugnisbez { get; set; }
     }
 }

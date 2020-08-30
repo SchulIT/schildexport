@@ -10,6 +10,8 @@ namespace SchulIT.SchildExport.Models
 
         public string Name { get; set; }
 
+        public string DisplayName { get; set; }
+
         public bool IsVisible { get; set; }
 
     }

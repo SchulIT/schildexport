@@ -157,7 +157,8 @@ namespace SchulIT.SchildExport.Repository
                 {
                     Id = course.Id,
                     Type = StudyGroupType.Course,
-                    Name = course.KurzBez
+                    Name = course.KurzBez,
+                    DisplayName = course.Zeugnisbez
                 };
 
                 var studentIds = new List<int>();
