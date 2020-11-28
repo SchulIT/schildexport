@@ -49,7 +49,7 @@ namespace SchulIT.SchildExport.Repository
 
                 var studyGroup = new StudyGroup
                 {
-                    Id = gradeRef.Id,
+                    Id = null,
                     Name = gradeRef.Name,
                     Type = StudyGroupType.Grade,
                     Grades = new List<GradeRef> { gradeRef }
