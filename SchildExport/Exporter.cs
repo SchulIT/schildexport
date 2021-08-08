@@ -37,6 +37,20 @@ namespace SchulIT.SchildExport
             });
         }
 
+        public Task<List<Grade>> GetGradesAsync(short year, short section) => GetGradesAsync(new VersetzungGradeConverter(), year, section);
+
+        private Task<List<Grade>> GetGradesAsync(IConverter<Versetzung, Grade> converter, short year, short section)
+        {
+            return Task.Run(() =>
+            {
+                using (var connection = new SchildNRWConnection())
+                {
+                    var repository = RepositoryFactory.CreateGradeRepository();
+                    return repository.FindAll(connection, converter, year, section);
+                }
+            });
+        }
+
         public Task<SchoolInfo> GetSchoolInfoAsync() => GetSchoolInfoAsync(new EigeneSchuleSchoolInfoConverter());
 
         private Task<SchoolInfo> GetSchoolInfoAsync(IConverter<EigeneSchule, SchoolInfo> converter)

@@ -26,11 +26,27 @@ namespace SchulIT.SchildExport.Repository
             schuelerStudentConverter?.SetGrades(grades);
 
             var students = (from s in connection.Schueler
-                           from l in connection.SchuelerLernabschnittsdaten.InnerJoin(sld => sld.SchuelerId == s.Id)
-                           where l.Jahr == year && l.Abschnitt == section
-                           select s).Distinct();
+                            from l in connection.SchuelerLernabschnittsdaten.InnerJoin(sld => sld.SchuelerId == s.Id)
+                            where l.Jahr == year && l.Abschnitt == section
+                            select s)
+                           .Distinct()
+                           .Select(x => schuelerStudentConverter.Convert(x))
+                           .ToDictionary(s => s.Id);
 
-            return students.Select(x => schuelerStudentConverter.Convert(x)).ToList();
+            // Patch grade
+            var info = connection.SchuelerLernabschnittsdaten
+                .Where(sld => sld.Jahr == year && sld.Abschnitt == section)
+                .ToList();
+
+            foreach(var item in info)
+            {
+                if(students.ContainsKey(item.SchuelerId))
+                {
+                    students[item.SchuelerId].Grade = grades.FirstOrDefault(x => x.Name == item.Klasse);
+                }
+            }
+
+            return students.Values.ToList();
         }
 
         public List<Student> FindAll(SchildNRWConnection connection, IConverter<Schueler, Student> converter, int[] status, DateTime? leaveDate)

@@ -27,6 +27,8 @@ namespace SchulIT.SchildExport
 
         Task<List<Grade>> GetGradesAsync();
 
+        Task<List<Grade>> GetGradesAsync(short year, short section);
+
         Task<List<StudyGroup>> GetStudyGroupsAsync(IEnumerable<Student> currentStudents, short year, short section);
 
         Task<List<Tuition>> GetTuitionsAsync(IEnumerable<Student> currentStudents, short year, short section);
