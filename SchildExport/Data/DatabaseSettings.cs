@@ -6,10 +6,13 @@ namespace SchulIT.SchildExport.Data
 {
     public class DatabaseSettings : ILinqToDBSettings
     {
-        private string connectionString;
+        private readonly string connectionString;
 
-        public DatabaseSettings(string connectionString)
+        private readonly string dataProvider;
+
+        public DatabaseSettings(string dataProvider, string connectionString)
         {
+            this.dataProvider = dataProvider;
             this.connectionString = connectionString;
         }
 
@@ -26,7 +29,7 @@ namespace SchulIT.SchildExport.Data
                 yield return new ConnectionStringSettings
                 {
                     Name = "default",
-                    ProviderName = "SqlServer",
+                    ProviderName = dataProvider,
                     ConnectionString = connectionString
                 };
             }

@@ -12,15 +12,43 @@ namespace SchulIT.SchildExport
 {
     public class Exporter : IExporter
     {
+
         public void Configure(string connectionString, bool enableTrace)
+        {
+            Configure(ConnectionProvider.SqlServer, connectionString, enableTrace);
+        }
+
+        public void Configure(ConnectionProvider connectionProvider, string connectionString, bool enableTrace)
         {
             if (enableTrace)
             {
                 DataConnection.TurnTraceSwitchOn();
-                DataConnection.WriteTraceLine = (message, displayName) => { Console.WriteLine($"{message} {displayName}"); };
+                DataConnection.WriteTraceLine = (message, displayName, level) => { Console.WriteLine($"{message} {displayName}"); };
             }
 
-            DataConnection.DefaultSettings = new DatabaseSettings(connectionString);
+
+
+            DataConnection.DefaultSettings = new DatabaseSettings(ConvertConnectionProviderToString(connectionProvider), connectionString);
+        }
+
+        private static string ConvertConnectionProviderToString(ConnectionProvider provider)
+        {
+            switch (provider)
+            {
+                case ConnectionProvider.Access:
+                    return "Access";
+
+                case ConnectionProvider.MySqlConnector:
+                    return "MySqlConnector";
+
+                case ConnectionProvider.SqlServer:
+                    return "SqlServer";
+
+                case ConnectionProvider.SqlServer2017:
+                    return "SqlServer.2017";
+            }
+
+            throw new ArgumentException("Provider " + provider + " is not supported.");
         }
 
         public Task<List<Grade>> GetGradesAsync() => GetGradesAsync(new VersetzungGradeConverter());

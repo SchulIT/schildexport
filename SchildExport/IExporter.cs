@@ -7,7 +7,16 @@ namespace SchulIT.SchildExport
 {
     public interface IExporter
     {
+        [Obsolete("Use Configure(string, string, string) which enables you to specify a ")]
         void Configure(string connectionString, bool enableTrace);
+
+        /// <summary>
+        /// Konfiguriert den Exporter
+        /// </summary>
+        /// <param name="connectionProvider">Gibt</param>
+        /// <param name="connectionString">Gibt die Verbindungszeichenfolge an.</param>
+        /// <param name="enableTrace"></param>
+        void Configure(ConnectionProvider connectionProvider, string connectionString, bool enableTrace);
 
         Task<SchoolInfo> GetSchoolInfoAsync();
 

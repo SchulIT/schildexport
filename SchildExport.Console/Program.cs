@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using SchulIT.SchildExport;
+using System;
 using System.Threading.Tasks;
 
 namespace SchildExport.Console
@@ -8,12 +9,15 @@ namespace SchildExport.Console
     {
         static void Main(string[] args)
         {
+            WriteLine("Enter connection provider (Access, SqlServer, SqlServer2017, MySqlConnector");
+            var connectionProvider = System.Console.ReadLine();
+
             WriteLine("Enter connection string:");
             var connectionString = System.Console.ReadLine();
 
             WriteLine("Connecting to database...");
             var schildExport = new Exporter();
-            schildExport.Configure(connectionString, true);
+            schildExport.Configure((ConnectionProvider)Enum.Parse(typeof(ConnectionProvider), connectionProvider), connectionString, true);
 
             bool isExited = false;
 

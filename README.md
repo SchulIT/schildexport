@@ -55,22 +55,92 @@ Mithilfe dieser Bibliothek kann die Schild-Datenbank objekt-orientiert ausgelese
     * Lehrkraft
     * zusätzliche Lehrkräfte
 
-Schild muss dazu mit einer SQL Server-Datenbank betrieben werden. Eine Erweiterung auf MySQL ist dank der Nutzung eines ORMs möglich, sobald sich jemand findet, der SchILD mit MySQL betreibt.
+## Unterstützte SchILD-Installationen
 
-**Wichtig:** Access wird weder aktuell noch zukünftig unterstützt werden.
+Es werden sowohl Access*, MySQL, MariaDB als auch Microsoft SQL-Datenbanken unterstützt.
 
 ## Installation
 
 Die Installation erfolgt via NuGet.
 
-## Nutzung
+## Datenbankanbindung
+
+Abhängig davon, welches Datenbank-Backend man verwenden möchte, müssen weitere Pakete eingebunden und auf dem Zielsystem installiert werden.
+
+### Access
+
+Benötigties NuGet-Paket: `System.Data.Odbc`
+
+Damit das Verbinden zu Access klappt, müssen die Architektur (x86 oder x64) von Office, der Redistributatble und von diesem Tool identisch sein. Beim 32-bit Office wird das x86 Redistributable und die [x86-Version](https://github.com/SchulIT/anonymization-tool/releases) benötigt. Analog wird das x64 Redistributable bzw. die [x64-Version](https://github.com/SchulIT/anonymization-tool/releases) benötigt.
+
+* [Download für Office 2010](https://www.microsoft.com/de-DE/download/details.aspx?id=13255) (nicht getestet)
+* [Download für Office 2013](https://www.microsoft.com/en-us/download/details.aspx?id=39358) (nicht getestet)
+* [Download für Office 2016/2019/Office 365](https://www.microsoft.com/en-us/download/details.aspx?id=54920)
+
+⚠️ Dieses Redistributable muss auch auf dem System installiert sein, welche die Anwendung ausführt, die dieses Bibliothek verwendet ⚠️
+
+### Microsoft SQL
+
+Benötigtes NuGet-Paket: `Microsoft.Data.SqlClient`
+
+Auf dem Zielsystem muss kein zusätzliches Tool installiert werden.
+
+### MySQL/MariaDB
+
+Benötigtes NuGet-Paket: `MySqlConnector`
+
+Auf dem Zielsystem muss kein zusätzliches Tool installiert werden.
+
+## Verbindung zur SchILD-Datenbank
+
+### Access
 
 ```csharp
 var exporter = new Exporter();
-exporter.Configure("Server=localhost\SQLEXPRESS; Database=SchildNRW; User=Schild; Password=$3cr3t", false);
+exporter.Configure(ConnectionProvider.Access, "Driver={Microsoft Access Driver (*.mdb, *.accdb)};Dbq=$path$;Pwd=******;", false);
 ```
 
-Alternativ kann auch eine andere gültige Verbindungszeichenfolge verwendet werden. Der zweite Parameter gibt an, ob die SQL Befehle auf der Konsole ausgegeben werden sollen (kann bspw. für Debug-Zwecke hilfreich sein).
+❗ Dabei muss `$path$` durch den Pfad zur Datenbankdatei (bspw. `C:\SchILD-NRW\DB\ge_2018_19.mdb`) angepasst werden.
+
+Das Standard-Passwort für die Access-Datenbank von SchILD muss [beim Hersteller](https://www.svws.nrw.de/) angefragt werden.
+
+
+### Microsoft SQL
+
+```csharp
+var exporter = new Exporter();
+exporter.Configure(ConnectionProvider.SqlServer, connectionString, false);
+```
+
+Die Verbindungszeichenfolge `connectionString` für die Verbindung zur SchILD-Datenbank lautet folgenermaßen:
+
+```
+Server=server\sqlexpress;Database=SchildNRW;Integrated Security=True
+```
+
+* `Server`: Hier wird der Pfad zur SQL-Server-Instanz (i.d.R. ist `server` der Computername, `sqlexpress` ist der Instanzname bei SQL Server Express)
+* `Database`: Hier den gewünschten Datenbanknamen eintragen. Die Datenbank wird automatisch erstellt.
+* `Integrated Security=True`: So wird der aktuelle Benutzername zur Verbindung. Alternativ lassen sich mit `User=$username%; Password=$password$` auch Benutzername und Passwort separat festlegen (anstelle von `Integrated Security=True`).
+
+### MySQL/MariaDB
+
+```csharp
+var exporter = new Exporter();
+exporter.Configure(ConnectionProvider.MySqlConnector, connectionString, false);
+```
+
+Die Verbindungszeichenfolge `connectionString` für die Verbindung zur SchILD-Datenbank lautet folgenermaßen:
+
+```
+Server=localhost;Database=schildnrw;User=username;Password=your_secret_password;
+```
+
+* `Server`: Servername des MySQL Servers
+* `Database`: Name der Datenbank auf dem MySQL Server. Die Datenbank wird automatisch angelegt, falls sie nicht vorhanden sein sollte.
+* `User`: Benutzername zum Verbinden
+* `Password`: Das Password des Benutzers, der sich verbinden möchte.
+
+## Daten abrufen
 
 Anschließend können die entsprechenden Methoden genutzt werden, um Daten aus der Datenbank zu erhalten:
 

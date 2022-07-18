@@ -8,30 +8,30 @@ namespace SchulIT.SchildExport.Data
     {
         public SchildNRWConnection() : base("default") { }
 
-        public ITable<EigeneSchule> EigeneSchule => GetTable<EigeneSchule>();
+        public ITable<EigeneSchule> EigeneSchule => this.GetTable<EigeneSchule>();
 
-        public ITable<EigeneSchuleFaecher> EigeneSchuleFaecher => GetTable<EigeneSchuleFaecher>();
+        public ITable<EigeneSchuleFaecher> EigeneSchuleFaecher => this.GetTable<EigeneSchuleFaecher>();
 
-        public ITable<KLehrer> KLehrer => GetTable<KLehrer>();
+        public ITable<KLehrer> KLehrer => this.GetTable<KLehrer>();
 
-        public ITable<LehrerAbschnittsdaten> LehrerAbschnittsdaten => GetTable<LehrerAbschnittsdaten>();
+        public ITable<LehrerAbschnittsdaten> LehrerAbschnittsdaten => this.GetTable<LehrerAbschnittsdaten>();
 
-        public ITable<LehrerLehramtLehrbef> LehrerLehramtLehrbef => GetTable<LehrerLehramtLehrbef>();
+        public ITable<LehrerLehramtLehrbef> LehrerLehramtLehrbef => this.GetTable<LehrerLehramtLehrbef>();
 
-        public ITable<Versetzung> Versetzung => GetTable<Versetzung>();
+        public ITable<Versetzung> Versetzung => this.GetTable<Versetzung>();
 
-        public ITable<Schueler> Schueler => GetTable<Schueler>();
+        public ITable<Schueler> Schueler => this.GetTable<Schueler>();
 
-        public ITable<SchuelerLeistungsdaten> SchuelerLeistungsdaten => GetTable<SchuelerLeistungsdaten>();
+        public ITable<SchuelerLeistungsdaten> SchuelerLeistungsdaten => this.GetTable<SchuelerLeistungsdaten>();
 
-        public ITable<SchuelerLernabschnittsdaten> SchuelerLernabschnittsdaten => GetTable<SchuelerLernabschnittsdaten>();
+        public ITable<SchuelerLernabschnittsdaten> SchuelerLernabschnittsdaten => this.GetTable<SchuelerLernabschnittsdaten>();
 
-        public ITable<Kurs> Kurse => GetTable<Kurs>();
+        public ITable<Kurs> Kurse => this.GetTable<Kurs>();
 
-        public ITable<KursLehrer> KursLehrer => GetTable<KursLehrer>();
+        public ITable<KursLehrer> KursLehrer => this.GetTable<KursLehrer>();
 
-        public ITable<KDatenschutz> KDatenschutz => GetTable<KDatenschutz>();
+        public ITable<KDatenschutz> KDatenschutz => this.GetTable<KDatenschutz>();
 
-        public ITable<SchuelerDatenschutz> SchuelerDatenschutz => GetTable<SchuelerDatenschutz>();
+        public ITable<SchuelerDatenschutz> SchuelerDatenschutz => this.GetTable<SchuelerDatenschutz>();
     }
 }
