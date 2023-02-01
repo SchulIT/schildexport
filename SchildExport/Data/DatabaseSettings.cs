@@ -1,4 +1,6 @@
-﻿using LinqToDB.Configuration;
+﻿using LinqToDB;
+using LinqToDB.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -6,21 +8,26 @@ namespace SchulIT.SchildExport.Data
 {
     public class DatabaseSettings : ILinqToDBSettings
     {
-        private readonly string connectionString;
+        private readonly string host;
+        private readonly int port;
+        private readonly string database;
+        private readonly string username;
+        private readonly string password;
 
-        private readonly string dataProvider;
-
-        public DatabaseSettings(string dataProvider, string connectionString)
+        public DatabaseSettings(string host, int port, string database, string username, string password)
         {
-            this.dataProvider = dataProvider;
-            this.connectionString = connectionString;
+            this.host = host;
+            this.port = port;
+            this.database = database;
+            this.username = username;
+            this.password = password;
         }
 
         public IEnumerable<IDataProviderSettings> DataProviders => Enumerable.Empty<IDataProviderSettings>();
 
-        public string DefaultConfiguration => "default";
+        public string DefaultConfiguration => "svws";
 
-        public string DefaultDataProvider => "SqlServer";
+        public string DefaultDataProvider => ProviderName.MySqlConnector;
 
         public IEnumerable<IConnectionStringSettings> ConnectionStrings
         {
@@ -28,9 +35,9 @@ namespace SchulIT.SchildExport.Data
             {
                 yield return new ConnectionStringSettings
                 {
-                    Name = "default",
-                    ProviderName = dataProvider,
-                    ConnectionString = connectionString
+                    Name = "svws",
+                    ProviderName = ProviderName.MySqlConnector,
+                    ConnectionString = $"Server={host};Port={port};Database={database};User={username};Password={password};"
                 };
             }
         }

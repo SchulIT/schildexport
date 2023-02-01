@@ -9,4 +9,5 @@ namespace SchulIT.SchildExport.Data
         public string ProviderName { get; set; }
         public bool IsGlobal => false;
     }
+
 }
