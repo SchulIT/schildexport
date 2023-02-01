@@ -55,6 +55,7 @@ Mithilfe dieser Bibliothek kann die SchILD3-Datenbank objekt-orientiert ausgeles
     * Geschlecht
     * Amtsbezeichnung
     * dienstliche E-Mail Adresse
+    * Geburtstag
     * Fächer (Lehramtsbefähigungen)
     * Sichtbarkeit
 * Klassen (in Abhängigkeit vom Schuljahresabschnitt)

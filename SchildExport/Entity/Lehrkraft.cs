@@ -1,5 +1,6 @@
 ﻿using LinqToDB.Mapping;
 using SchulIT.SchildExport.Converter;
+using System;
 using System.Collections.Generic;
 
 namespace SchulIT.SchildExport.Entity
@@ -34,6 +35,9 @@ namespace SchulIT.SchildExport.Entity
 
         [Column(Name = "EMailDienstlich")]
         public string EmailDienstlich { get; set; }
+
+        [Column(Name = "Geburtsdatum")]
+        public DateTime? Geburtsdatum { get; set; }
 
         [Association(ThisKey = nameof(Id), OtherKey = nameof(Lehrbefaehigung.LehrkraftId))]
         public IEnumerable<Lehrbefaehigung> Lehrbefaehigungen { get; set; }

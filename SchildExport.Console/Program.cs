@@ -220,11 +220,11 @@ namespace SchildExport.Console
         private static void PrintLehrkraefte(IEnumerable<Lehrkraft> lehrkraefte)
         {
             var table = new Table();
-            table.AddColumns("Kürzel", "Nachname", "Vorname", "Titel", "Amtsbez.", "Geschlecht", "EMail", "Fächer");
+            table.AddColumns("Kürzel", "Nachname", "Vorname", "Titel", "Amtsbez.", "Geburtsdatum", "Geschlecht", "EMail", "Fächer");
 
             foreach (var lehrkraft in lehrkraefte)
             {
-                table.AddRow(lehrkraft.Kuerzel ?? "<leer>", lehrkraft.Nachname ?? "<leer>", lehrkraft.Vorname ?? "<leer>", lehrkraft.Titel ?? "<leer>", lehrkraft.Amtsbezeichnung ?? "<leer>", lehrkraft.Geschlecht.ToString(), lehrkraft.EmailDienstlich ?? "<leer>", string.Join(", ", lehrkraft.Lehrbefaehigungen.Select(x => x.FachKuerzel)));
+                table.AddRow(lehrkraft.Kuerzel ?? "<leer>", lehrkraft.Nachname ?? "<leer>", lehrkraft.Vorname ?? "<leer>", lehrkraft.Titel ?? "<leer>", lehrkraft.Amtsbezeichnung ?? "<leer>", lehrkraft.Geburtsdatum != null ? lehrkraft.Geburtsdatum.ToString() : "<leer>", lehrkraft.Geschlecht.ToString(), lehrkraft.EmailDienstlich ?? "<leer>", string.Join(", ", lehrkraft.Lehrbefaehigungen.Select(x => x.FachKuerzel)));
             }
 
             AnsiConsole.Write(table);
