@@ -26,6 +26,12 @@ namespace SchulIT.SchildExport.Entity
         [ValueConverter(ConverterType = typeof(CharBooleanConverter))]
         public bool IstSichtbar { get; set; }
 
+        [Column(Name = "ZeugnisBez")]
+        public string ZeugnisBezeichnung { get; set; }
+
+        [Column(Name = "Jahrgaenge")]
+        public string Jahrgaenge { get; set; }
+
         [Column(Name = "Lehrer_ID")]
         public long LehrkraftId { get; set; }
 

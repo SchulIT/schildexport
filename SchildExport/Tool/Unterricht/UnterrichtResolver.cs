@@ -6,7 +6,7 @@ namespace SchulIT.SchildExport.Tool.Unterricht
 {
     public class UnterrichtResolver
     {
-        public List<Unterricht> Resolve(IEnumerable<KindLeistungsdaten> leistungsdaten, IEnumerable<Kurs> kurse, int schuljahresabschnittId)
+        public List<Unterricht> Resolve(IEnumerable<KindLeistungsdaten> leistungsdaten, IEnumerable<Kurs> kurse, long schuljahresabschnittId)
         {
             var kinder = leistungsdaten
                 .GroupBy(x => x.Lernabschnitt.KindId)

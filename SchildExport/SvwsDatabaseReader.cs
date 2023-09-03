@@ -5,6 +5,7 @@ using SchulIT.SchildExport.Entity;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace SchulIT.SchildExport
@@ -30,6 +31,12 @@ namespace SchulIT.SchildExport
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<List<Schuljahresabschnitt>> GetSchuljahresabschnitteAsync()
+        {
+            using var connection = new SvwsConnection();
+            return await connection.Schuljahresabschnitte.OrderByDescending(x => x.Jahr).ThenByDescending(x => x.Abschnitt).ToListAsync();
+        }
+
         public async Task<List<Lehrkraft>> GetLehrkraefteAsync()
         {
             using var connection = new SvwsConnection();
@@ -39,7 +46,7 @@ namespace SchulIT.SchildExport
                 .ToListAsync();
         }
 
-        public async Task<List<Lehrkraft>> GetLehrkraefteAsync(int schuljahresabschnittId)
+        public async Task<List<Lehrkraft>> GetLehrkraefteAsync(long schuljahresabschnittId)
         {
             using var connection = new SvwsConnection();
             return await connection.Lehrkraefte
@@ -49,7 +56,7 @@ namespace SchulIT.SchildExport
                 .ToListAsync();
         }
 
-        public async Task<List<Klasse>> GetKlassenAsync(int schuljahresabschnittId)
+        public async Task<List<Klasse>> GetKlassenAsync(long schuljahresabschnittId)
         {
             using var connection = new SvwsConnection();
             return await connection.Klassen
@@ -65,7 +72,7 @@ namespace SchulIT.SchildExport
                 .ToListAsync();
         }
 
-        public async Task<List<Kind>> GetKinderAsync(int schuljahresabschnittId)
+        public async Task<List<Kind>> GetKinderAsync(long schuljahresabschnittId)
         {
             using var connection = new SvwsConnection();
             return await connection.Kinder
@@ -77,7 +84,7 @@ namespace SchulIT.SchildExport
                 .ToListAsync();
         }
 
-        public async Task<List<Kurs>> GetKurseAsync(int schuljahresabschnittId)
+        public async Task<List<Kurs>> GetKurseAsync(long schuljahresabschnittId)
         {
             using var connection = new SvwsConnection();
             return await connection.Kurse
@@ -89,7 +96,7 @@ namespace SchulIT.SchildExport
                 .ToListAsync();
         }
 
-        public async Task<List<KindLeistungsdaten>> GetLeistungsdatenAsync(int schuljahresabschnittId)
+        public async Task<List<KindLeistungsdaten>> GetLeistungsdatenAsync(long schuljahresabschnittId)
         {
             using var connection = new SvwsConnection();
             return await connection.Leistungsdaten
@@ -118,12 +125,18 @@ namespace SchulIT.SchildExport
                 .ToListAsync();
         }
 
-        public async Task<bool> IsUsernameAlreadyTakenAsync(Lernplattform lernplattform, string benutzername)
+        public async Task<Dictionary<string, long>> GetUsernamesInUseAsync(long lernplattformId)
         {
             using var connection = new SvwsConnection();
-            return await connection.LernplattformZugangsdaten
-                .Where(x => x.LernplattformId == lernplattform.Id && x.Benutzername == benutzername)
-                .AnyAsync();
+            // Keine Ahnung, wie JOINs mit der Fluent API funktionieren, daher LINQ
+            var query = from
+                k in connection.Kinder
+                        join p in connection.KindLernplattformZustimmungen on k.Id equals p.KindId
+                        join z in connection.LernplattformZugangsdaten on p.ZugangsdatenId equals z.Id
+                        where p.LernplattformId == lernplattformId
+                        select new { k.Id, z.Benutzername };
+
+            return await query.ToDictionaryAsync(x => x.Benutzername, x => x.Id);
         }
     }
 }

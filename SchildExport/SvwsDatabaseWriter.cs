@@ -75,5 +75,108 @@ namespace SchulIT.SchildExport
                 throw ex;
             }
         }
+
+        public async Task UpdateKinderBulkAsync(IEnumerable<Kind> kinder)
+        {
+            using var connection = new SvwsConnection();
+
+            try
+            {
+                await connection.BeginTransactionAsync();
+
+                foreach (var kind in kinder)
+                {
+                    await connection.Kinder
+                        .Where(x => x.Id == kind.Id)
+                        .Set(x => x.SchulEmail, kind.SchulEmail)
+                        .UpdateAsync();
+                }
+
+                await connection.CommitTransactionAsync();
+            }
+            catch (Exception ex)
+            {
+                await connection.RollbackTransactionAsync();
+                throw ex;
+            }
+        }
+
+        public async Task DeleteLernplattformCredentials(IEnumerable<Kind> zubehaltendeKinder)
+        {
+            // Sicherlich nicht die performanteste Idee, aber dafür schön zu programmieren :)
+            using var connection = new SvwsConnection();
+            var vollstaendigeKinder = await connection.Kinder
+                .LoadWith(x => x.Lernabschnitte).ThenLoad(x => x.Klasse)
+                .LoadWith(x => x.DatenschutzZustimmungen).ThenLoad(x => x.Kategorie)
+                .LoadWith(x => x.LernplattformZustimmungen).ThenLoad(x => x.Zugangsdaten)
+                .LoadWith(x => x.LernplattformZustimmungen).ThenLoad(x => x.Lernplattform)
+                .Where(x => !zubehaltendeKinder.Select(x => x.Id).Contains(x.Id))
+                .ToListAsync();
+
+            try
+            {
+                await connection.BeginTransactionAsync();
+
+                foreach (var kind in vollstaendigeKinder)
+                {
+                    foreach (var plattform in kind.LernplattformZustimmungen)
+                    {
+                        if (plattform.Zugangsdaten == null)
+                        {
+                            continue;
+                        }
+
+                        await connection.DeleteAsync(plattform.Zugangsdaten);
+                    }
+                }
+
+                await connection.CommitTransactionAsync();
+            }
+            catch (Exception ex)
+            {
+                await connection.RollbackTransactionAsync();
+                throw ex;
+            }
+        }
+
+        public async Task RetireLernplattformCredentials(IEnumerable<Kind> zubehaltendeKinder)
+        {
+            // Sicherlich nicht die performanteste Idee, aber dafür schön zu programmieren :)
+            using var connection = new SvwsConnection();
+            var vollstaendigeKinder = await connection.Kinder
+                .LoadWith(x => x.Lernabschnitte).ThenLoad(x => x.Klasse)
+                .LoadWith(x => x.DatenschutzZustimmungen).ThenLoad(x => x.Kategorie)
+                .LoadWith(x => x.LernplattformZustimmungen).ThenLoad(x => x.Zugangsdaten)
+                .LoadWith(x => x.LernplattformZustimmungen).ThenLoad(x => x.Lernplattform)
+                .Where(x => !zubehaltendeKinder.Select(x => x.Id).Contains(x.Id))
+                .ToListAsync();
+
+            try
+            {
+                await connection.BeginTransactionAsync();
+
+                foreach (var kind in vollstaendigeKinder)
+                {
+                    foreach (var plattform in kind.LernplattformZustimmungen)
+                    {
+                        if (plattform.Zugangsdaten == null)
+                        {
+                            continue;
+                        }
+
+                        plattform.Zugangsdaten.Benutzername = "RETIRED_" + DateTime.Now.ToString("yyyy-MM-dd") + "_" + plattform.Zugangsdaten.Benutzername;
+
+                        await connection.DeleteAsync(plattform.Zugangsdaten);
+                    }
+                }
+
+                await connection.CommitTransactionAsync();
+            }
+            catch (Exception ex)
+            {
+                await connection.RollbackTransactionAsync();
+                throw ex;
+            }
+        }
     }
 }

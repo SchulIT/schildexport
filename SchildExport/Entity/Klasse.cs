@@ -23,6 +23,9 @@ namespace SchulIT.SchildExport.Entity
         [ValueConverter(ConverterType = typeof(CharBooleanConverter))]
         public bool IstSichtbar { get; set; }
 
+        [Column(Name = "Jahrgang_ID")]
+        public long? JahrgangId { get; set; }
+
         [Association(ThisKey = nameof(Id), OtherKey = nameof(Entity.Klassenleitung.KlasseId))]
         public IEnumerable<Klassenleitung> Klassenleitung { get; set; }
     }

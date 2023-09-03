@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace SchulIT.SchildExport
 {
-    internal interface ISvwsDatabaseWriter : IDatabaseConfigurator
+    public interface ISvwsDatabaseWriter : IDatabaseConfigurator
     {
         /// <summary>
         /// Fügt eine neue Lernplattform in die Datenbank ein oder aktualisiert sie, falls sie
@@ -18,5 +18,35 @@ namespace SchulIT.SchildExport
         public Task InsertOrUpdateLernplattformAsync(Lernplattform lernplattform);
 
         public Task InsertOrUpdateLernplattformZustimmungenBulkAsync(IEnumerable<KindLernplattform> zustimmungen);
+
+        /// <summary>
+        /// Aktualisiert die E-Mail-Adresse eines Kindes in der SVWS-Datenbank.
+        /// 
+        /// Achtung: Es wird nur das Feld SchulEmail aktualisiert, alle anderen Felder bleiben unverändert.
+        /// </summary>
+        /// <param name="kind"></param>
+        /// <returns></returns>
+        public Task UpdateKinderBulkAsync(IEnumerable<Kind> kind);
+
+        /// <summary>
+        /// Pensioniert alle Zugangsdaten, außer für die angegebenen Kinder. Diese Funktion ist hilfreich, um Benutzernamen
+        /// wieder vergeben zu können.
+        /// 
+        /// Die Methode löscht die Zugangsdaten nicht, sondern stellt ein "RETIRED_" mit dem Datum der Ausführung
+        /// vor den Benutzernamen.
+        /// 
+        /// Falls die Zugangsdaten gelöscht werden sollen, kann die Methode <see cref="DeleteLernplattformCredentials(IEnumerable{Kind})"/>
+        /// verwendet werden.
+        /// </summary>
+        /// <param name="zubehaltendeKinder"></param>
+        /// <returns></returns>
+        public Task RetireLernplattformCredentials(IEnumerable<Kind> zubehaltendeKinder);
+
+        /// <summary>
+        /// Löscht alle Zugangsdaten, außer für die angegebenen Kinder.
+        /// </summary>
+        /// <param name="zubehaltendeKinder"></param>
+        /// <returns></returns>
+        public Task DeleteLernplattformCredentials(IEnumerable<Kind> zubehaltendeKinder);
     }
 }
