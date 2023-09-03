@@ -2,7 +2,7 @@
 
 namespace SchulIT.SchildExport.Entity
 {
-    [Table(Name = "SVWS_DB_AutoInkremente")]
+    [Table(Name = "Schema_AutoInkremente")]
     public class SvwsAutoIncrement
     {
         [PrimaryKey, Column(Name = "NameTabelle")]
