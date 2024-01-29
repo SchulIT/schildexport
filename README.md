@@ -58,6 +58,9 @@ Mithilfe dieser Bibliothek kann die SchILD3-Datenbank objekt-orientiert ausgeles
     * Geburtstag
     * Fächer (Lehramtsbefähigungen)
     * Sichtbarkeit
+    * Datenschutz-Zustimmungen
+    * Lernplattform-Zustimmungen
+    * Lernplattform-Zugangsdaten
 * Klassen (in Abhängigkeit vom Schuljahresabschnitt)
     * Id
     * Name
@@ -81,7 +84,7 @@ Mithilfe dieser Bibliothek kann die SchILD3-Datenbank objekt-orientiert ausgeles
 
 ## Schreibender Zugriff
 
-Grundsätzlich soll durch diese Bibliothek kein schreibender Zugriff auf die Datenbank erfolgen. Es ist jedoch möglich, Lerngruppen anzulegen und (allerdings aktuell nur für Schülerinnen und Schüler) initiale Zugangsdaten für Schülerinnen und Schüler anzulegen.
+Grundsätzlich soll durch diese Bibliothek kein schreibender Zugriff auf die Datenbank erfolgen. Es ist jedoch möglich, Lernplattformen anzulegen und (allerdings aktuell nur für Schülerinnen und Schüler) initiale Zugangsdaten für Schülerinnen und Schüler anzulegen.
 
 ## Installation
 

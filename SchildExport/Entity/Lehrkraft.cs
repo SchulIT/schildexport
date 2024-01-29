@@ -44,5 +44,11 @@ namespace SchulIT.SchildExport.Entity
 
         [Association(ThisKey = nameof(Id), OtherKey = nameof(LehrkraftAbschnittsdaten.LehrkraftId))]
         public IEnumerable<LehrkraftAbschnittsdaten> Abschnittsdaten { get; set; }
+
+        [Association(ThisKey = nameof(Id), OtherKey = nameof(LehrkraftDatenschutz.LehrkraftId))]
+        public IEnumerable<LehrkraftDatenschutz> DatenschutzZustimmungen { get; set; }
+
+        [Association(ThisKey = nameof(Id), OtherKey = nameof(LehrkraftLernplattform.LehrkraftId))]
+        public IEnumerable<LehrkraftLernplattform> LernplattformZustimmungen { get; set; }
     }
 }

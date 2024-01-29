@@ -43,6 +43,9 @@ namespace SchulIT.SchildExport
             return await connection.Lehrkraefte
                 .LoadWith(x => x.Abschnittsdaten)
                 .LoadWith(x => x.Lehrbefaehigungen)
+                .LoadWith(x => x.DatenschutzZustimmungen).ThenLoad(x => x.Kategorie)
+                .LoadWith(x => x.LernplattformZustimmungen).ThenLoad(x => x.Zugangsdaten)
+                .LoadWith(x => x.LernplattformZustimmungen).ThenLoad(x => x.Lernplattform)
                 .ToListAsync();
         }
 
@@ -52,6 +55,9 @@ namespace SchulIT.SchildExport
             return await connection.Lehrkraefte
                 .LoadWith(x => x.Abschnittsdaten)
                 .LoadWith(x => x.Lehrbefaehigungen)
+                .LoadWith(x => x.DatenschutzZustimmungen).ThenLoad(x => x.Kategorie)
+                .LoadWith(x => x.LernplattformZustimmungen).ThenLoad(x => x.Zugangsdaten)
+                .LoadWith(x => x.LernplattformZustimmungen).ThenLoad(x => x.Lernplattform)
                 .Where(x => x.Abschnittsdaten.Where(x => x.SchuljahresabschnittId == schuljahresabschnittId).Any())
                 .ToListAsync();
         }
