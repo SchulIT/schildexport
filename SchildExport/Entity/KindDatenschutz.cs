@@ -1,4 +1,6 @@
 ﻿using LinqToDB.Mapping;
+using SchulIT.SchildExport.Converter;
+using System;
 
 namespace SchulIT.SchildExport.Entity
 {
@@ -15,7 +17,8 @@ namespace SchulIT.SchildExport.Entity
         public DatenschutzKategorie Kategorie { get; set; }
 
         [Column(Name = "Status")]
-        public DatenschutzZustimmung Status { get; set; }
+        [ValueConverter(ConverterType = typeof(CharBooleanConverter))]
+        public bool IstZugestimmt { get; set; }
 
         [Column(Name = "Abgefragt")]
         public bool IstAbgefragt { get; set; }

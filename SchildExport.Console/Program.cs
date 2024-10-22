@@ -267,7 +267,7 @@ namespace SchildExport.Console
 
                 if (aktuellerAbschnitt != null)
                 {
-                    table.AddRow(kind.Nachname, kind.Vorname, kind.Geschlecht.ToString(), kind.Geburtsdatum != null ? kind.Geburtsdatum.ToString() : "<leer>", kind.Status.ToString(), kind.SchulEmail ?? "<leer>", aktuellerAbschnitt.Klasse.Name);
+                    table.AddRow(kind.Nachname, kind.Vorname, kind.Geschlecht.ToString(), kind.Geburtsdatum != null ? kind.Geburtsdatum.ToString() : "<leer>", kind.Status.ToString(), kind.SchulEmail ?? "<leer>", aktuellerAbschnitt.Klasse?.Name ?? "<leer>");
                 }
             }
 

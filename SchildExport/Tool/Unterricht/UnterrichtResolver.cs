@@ -25,7 +25,10 @@ namespace SchulIT.SchildExport.Tool.Unterricht
                         Fach = first.Fach
                     };
 
-                    unterricht.Lehrkraefte.Add(first.Lehrkraft);
+                    if (first.Lehrkraft != null)
+                    {
+                        unterricht.Lehrkraefte.Add(first.Lehrkraft);
+                    }
 
                     if(first.ZusaetzlicheLehrkraft != null)
                     {

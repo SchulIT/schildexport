@@ -2,7 +2,7 @@
 
 namespace SchulIT.SchildExport.Entity
 {
-    [Table(Name = "SchuelerLernplattform")]
+    [Table(Name = "LehrerLernplattform")]
     public class LehrkraftLernplattform
     {
         [PrimaryKey, Column(Name = "LehrerID")]

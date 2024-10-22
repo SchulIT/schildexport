@@ -13,8 +13,8 @@
     <tags>Schild NRW Schulverwaltung Export</tags>
     <dependencies>
         <group targetFramework=".NETStandard2.1">
-            <dependency id="linq2db" version="[5.2.2]" />
-			<dependency id="MySqlConnector" version="[2.2.7]" />
+            <dependency id="linq2db" version="[5.4.1]" />
+			<dependency id="MySqlConnector" version="[2.3.7]" />
         </group>
     </dependencies>
     
