@@ -1,4 +1,5 @@
-﻿using LinqToDB.Data;
+﻿using LinqToDB.Common;
+using LinqToDB.Data;
 using SchulIT.SchildExport.Converter;
 using SchulIT.SchildExport.Data;
 using SchulIT.SchildExport.Entities;
@@ -26,9 +27,8 @@ namespace SchulIT.SchildExport
                 DataConnection.WriteTraceLine = (message, displayName, level) => { Console.WriteLine($"{message} {displayName}"); };
             }
 
-
-
             DataConnection.DefaultSettings = new DatabaseSettings(ConvertConnectionProviderToString(connectionProvider), connectionString);
+            Configuration.Linq.GuardGrouping = false;
         }
 
         private static string ConvertConnectionProviderToString(ConnectionProvider provider)
