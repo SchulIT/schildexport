@@ -77,7 +77,7 @@ namespace SchulIT.SchildExport.Repository
         {
             var results = from a in connection.SchuelerLernabschnittsdaten
                           from l in connection.SchuelerLeistungsdaten.InnerJoin(sld => sld.AbschnittId == a.Id)
-                          where a.Jahr == year && a.Abschnitt == section && l.Kursart == GradeStudyGroupMembershipType
+                          where a.Jahr == year && a.Abschnitt == section && l.Kursart == GradeStudyGroupMembershipType && a.SemesterWertung == '+'
                           group a by a.Klasse into x
                           select new
                           {
@@ -110,7 +110,7 @@ namespace SchulIT.SchildExport.Repository
 
                 foreach (var data in result.StudentData)
                 {
-                    if (!studentIds.Contains(data.SchuelerId) && currentStudentIds.Contains(data.SchuelerId) && data.SemesterWertung == '+')
+                    if (!studentIds.Contains(data.SchuelerId) && currentStudentIds.Contains(data.SchuelerId))
                     {
                         var membership = new StudyGroupMembership
                         {
@@ -139,7 +139,7 @@ namespace SchulIT.SchildExport.Repository
 
             var memberships = from a in connection.SchuelerLernabschnittsdaten
                               from l in connection.SchuelerLeistungsdaten.InnerJoin(sld => sld.AbschnittId == a.Id)
-                              where a.Jahr == year && a.Abschnitt == section && l.Kursart != GradeStudyGroupMembershipType
+                              where a.Jahr == year && a.Abschnitt == section && l.Kursart != GradeStudyGroupMembershipType && a.SemesterWertung == '+'
                               select new
                               {
                                   CourseId = l.KursId,
